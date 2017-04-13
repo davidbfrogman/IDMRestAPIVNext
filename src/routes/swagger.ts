@@ -46,7 +46,7 @@ export class APIDocsRouter {
         filelist = filelist || [];
 
         _files
-            .map(function(file) {
+            .map(function (file) {
 
                 // filter out .map and hidden files
                 if (file.search(".map") < 0 && file.search(/^\./) < 0) {
@@ -55,7 +55,6 @@ export class APIDocsRouter {
                         filelist = APIDocsRouter.getAllRoutes(join(dir, file), filelist);
                     }
                     else {
-
                         if (file.search(".ts") > 0) {
                             filelist.push(join(dir, file));
                         }
