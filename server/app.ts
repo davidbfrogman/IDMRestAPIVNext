@@ -35,4 +35,6 @@ app.use("/api/docs", new APIDocsRouter().getRouter());
 
 const server: http.Server = app.listen(3003);
 
+console.log(`Listening on http://localhost:3003`);
+
 export { server };
