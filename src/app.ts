@@ -17,7 +17,7 @@ app.use(urlencoded({
 
 app.get("/", (request: express.Request, response: express.Response) => {
     response.json({
-        name: "Express application"
+        name: "IDM REST API"
     })
 });
 
