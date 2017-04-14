@@ -1,9 +1,7 @@
 process.env.NODE_ENV = "testing";
 
 import { Post, Author, IAuthor } from "../../models/models";
-import * as chai from "chai";
-
-const expect = chai.expect;
+import {} from 'jasmine';
 
 describe("Posts", () => {
 
@@ -15,8 +13,8 @@ describe("Posts", () => {
 
         author.save(async(err: Error, _res: IAuthor) => {
 
-            expect(_res).to.be.an("object");
-            expect(_res.name).to.be.equal("John");
+            //expect(_res).to.be.an("object");
+            expect(_res.name).toEqual("John");
 
             await Post.create({
                 author: _res._id,
@@ -28,9 +26,10 @@ describe("Posts", () => {
                 description: "Lorem ipsum..."
             });
 
-            const posts = await Post.findAllByAuthor(_res._id.toString());
+            Post.findAllByAuthor(_res._id.toString()).then((posts)=>{
+                expect(posts.title).toEqual('Tile 1');
+            }); 
 
-            expect(posts).to.be.length(2);
             done();
         });
 
