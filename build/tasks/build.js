@@ -8,15 +8,22 @@ var runSequence = require('run-sequence');
 gulp.task('build-system', function () {
     // gulp.src('src/**/*.ts')
     //   .pipe(gulp.dest('dist'));
-
     gutil.log('== building typescript to dist ==');
     var tsProject = ts.createProject('tsconfig.json');
-
-    return gulp.src('src/**/*.ts')
+    var tsResult = gulp.src('src/**/*.ts')
         .pipe(sourcemaps.init()) // This means sourcemaps will be generated 
-        .pipe(tsProject()).js
-        .pipe(sourcemaps.write()) // Now the sourcemaps are added to the .js file 
+        .pipe(tsProject());
+ 
+    return tsResult.js
+        .pipe(sourcemaps.write('.')) // Now the sourcemaps are added to the .js file 
         .pipe(gulp.dest('dist'));
+
+    // return gulp.src('src/**/*.ts')
+    //      // This means sourcemaps will be generated 
+    //     .pipe(tsProject()).js
+    //     .pipe(sourcemaps.init())
+    //     .pipe(sourcemaps.write()) // Now the sourcemaps are added to the .js file 
+    //     .pipe(gulp.dest('dist'));
 });
 
 // this task calls the clean task (located
