@@ -1,4 +1,3 @@
-// import * as mongoose from "mongoose";
 import { mongoose } from "../../config/database";
 import { Schema, Document, Model } from "mongoose";
 

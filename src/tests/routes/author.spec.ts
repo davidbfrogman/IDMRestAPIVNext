@@ -4,9 +4,6 @@ import {} from 'jasmine';
 
 import { server } from "../../app";
 
-//const expect = chai.expect;
-//chai.use(chaiHttp);
-
 describe("Api Author", function(): void {
 
     it("should be able to create user", (done:Function): void => {
