@@ -28,24 +28,24 @@ export class AuthorRouter {
          *       403:
          *         description: Forbidden
          */
-        // this.router.get("/author", async(request: Request, response: Response) => {
-
-        //     const authors = await Author.find({}).lean().exec();
-
-        //     response.json(authors)
-        // });
-        this.router.get("/author", (request: Request, response: Response)=>{
-            this.requests$.next({request, response});
-            Observable.of(Author.find({}).exec()).subscribe(async(authors)=>{
-                console.log(`Made a request to7: ${request.url}`);
-                response.json(await authors);
-            })
-        });
-
-        this.requests$.subscribe(async({request, response})=>{
-            const authors = await Author.find({}).lean().exec();
+        this.router.get("/author", async(request: Request, response: Response) => {
+            const authors = await Author.find({}).exec();
+            console.log('again159');
             response.json(authors)
         });
+        // this.router.get("/author", (request: Request, response: Response)=>{
+        //     this.requests$.next({request, response});
+        //     Observable.of(Author.find({}).exec()).subscribe(async(authors)=>{
+        //         console.log(`Made a request to7: ${request.url}`);
+        //         const stuff = await authors;
+        //         response.json(stuff);
+        //     })
+        // });
+
+        // this.requests$.subscribe(async({request, response})=>{
+        //     const authors = await Author.find({}).lean().exec();
+        //     response.json(authors)
+        // });
 
         /**
          * @swagger
