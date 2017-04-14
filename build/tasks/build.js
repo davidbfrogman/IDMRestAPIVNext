@@ -6,8 +6,8 @@ var gutil = require('gulp-util');
 var runSequence = require('run-sequence');
  
 gulp.task('build-system', function () {
-    gulp.src('src/**/*.ts')
-      .pipe(gulp.dest('dist'));
+    // gulp.src('src/**/*.ts')
+    //   .pipe(gulp.dest('dist'));
 
     gutil.log('== building typescript to dist ==');
     var tsProject = ts.createProject('tsconfig.json');

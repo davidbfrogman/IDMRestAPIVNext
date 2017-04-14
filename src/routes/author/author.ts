@@ -1,9 +1,12 @@
 import { Router, Request, Response } from "express";
 import { Author } from "../../models/author/model";
+import { Observable, Subject } from "@reactivex/rxjs";
 
 export class AuthorRouter {
 
     private router: Router = Router();
+
+    public requests$ = new Subject<{request: Request, response: Response}>();
 
     getRouter(): Router {
 
@@ -25,10 +28,22 @@ export class AuthorRouter {
          *       403:
          *         description: Forbidden
          */
-        this.router.get("/author", async(request: Request, response: Response) => {
+        // this.router.get("/author", async(request: Request, response: Response) => {
 
+        //     const authors = await Author.find({}).lean().exec();
+
+        //     response.json(authors)
+        // });
+        this.router.get("/author", (request: Request, response: Response)=>{
+            this.requests$.next({request, response});
+            Observable.of(Author.find({}).exec()).subscribe(async(authors)=>{
+                console.log(`Made a request to2: ${request.url}`);
+                response.json(await authors);
+            })
+        });
+
+        this.requests$.subscribe(async({request, response})=>{
             const authors = await Author.find({}).lean().exec();
-
             response.json(authors)
         });
 
