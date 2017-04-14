@@ -1,9 +1,11 @@
 var gulp = require('gulp');
 var debug = require('gulp-debug');
 var ts = require('gulp-typescript');
+var debug =  require('debug');
 var sourcemaps = require('gulp-sourcemaps');
 var gutil = require('gulp-util');
 var runSequence = require('run-sequence');
+var mapSources = require('@gulp-sourcemaps/map-sources');
  
 gulp.task('build-system', function () {
     // gulp.src('src/**/*.ts')
@@ -12,18 +14,15 @@ gulp.task('build-system', function () {
     var tsProject = ts.createProject('tsconfig.json');
     var tsResult = gulp.src('src/**/*.ts')
         .pipe(sourcemaps.init()) // This means sourcemaps will be generated 
+
         .pipe(tsProject());
  
     return tsResult.js
-        .pipe(sourcemaps.write('.')) // Now the sourcemaps are added to the .js file 
+        .pipe(mapSources(function(sourcePath, file) {
+            return file.base + sourcePath; //I'm not sure if this will always work but it works for now.
+        }))
+        .pipe(sourcemaps.write()) // Now the sourcemaps are added to the .js file 
         .pipe(gulp.dest('dist'));
-
-    // return gulp.src('src/**/*.ts')
-    //      // This means sourcemaps will be generated 
-    //     .pipe(tsProject()).js
-    //     .pipe(sourcemaps.init())
-    //     .pipe(sourcemaps.write()) // Now the sourcemaps are added to the .js file 
-    //     .pipe(gulp.dest('dist'));
 });
 
 // this task calls the clean task (located

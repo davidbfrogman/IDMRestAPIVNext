@@ -37,7 +37,7 @@ export class AuthorRouter {
         this.router.get("/author", (request: Request, response: Response)=>{
             this.requests$.next({request, response});
             Observable.of(Author.find({}).exec()).subscribe(async(authors)=>{
-                console.log(`Made a request to4: ${request.url}`);
+                console.log(`Made a request to7: ${request.url}`);
                 response.json(await authors);
             })
         });

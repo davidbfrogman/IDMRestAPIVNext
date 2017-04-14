@@ -6,6 +6,20 @@
     "configurations": [
         {
             "type": "node",
+            "request": "launch",
+            "name": "nodemon",
+            "runtimeExecutable": "nodemon",
+            "runtimeArgs": [
+                "--debug=5858"
+            ],
+            "program": "${workspaceRoot}/dist/app.js",
+            "restart": true,
+            "port": 5858,
+            "console": "integratedTerminal",
+            "internalConsoleOptions": "neverOpen"
+        },
+        {
+            "type": "node",
             "request": "attach",
             "name": "Attach to Process",
             "processId": "${command:PickProcess}",
@@ -18,9 +32,21 @@
             "type": "node",
             "request": "launch",
             "name": "Launch Program",
-            "program": "${workspaceRoot}/dist/app.js",
+            "program": "${workspaceRoot}/src/app.ts",
             "outFiles": ["${workspaceRoot}/dist/**/*.js"],
-            "sourceMaps": true
+            "protocol": "auto",
+            "sourceMaps": true,
+            "restart": true,
+             "trace": "sm"
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Gulp build task",
+            "program": "${workspaceRoot}/node_modules/gulp/bin/gulp.js",
+            "args": [
+                "build"
+            ]
         }
     ]
 }
