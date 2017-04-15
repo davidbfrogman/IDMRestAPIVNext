@@ -1,12 +1,15 @@
 import { mongoose } from "../config/database";
 import { Schema, Model, Document } from "mongoose";
+import {ListOptions} from './list-options';
 
 export interface IDocumentTemplate extends Document {
     name: string
     createdOn?: Date;
     modifiedOn?: Date;
     description?: string;
-    updateDescription(id: {}, description: string): Promise<{ nModified: number }>
+    updateDescription(id: {}, description: string): Promise<{ nModified: number }>;
+    load(id: {}): Promise<IDocumentTemplate>;
+    list(options: ListOptions): Promise<IDocumentTemplate[]>;
 }
 
 const schema = new Schema({
@@ -14,6 +17,13 @@ const schema = new Schema({
     createdOn: { type: Date, "default": Date.now },
     modifiedOn: { type: Date, },
     description: { type: String }
+});
+
+schema.pre('save',(next)=>{
+    if(this.modifiedOn){
+        this.modifiedOn = new Date();
+    }
+    next();
 });
 
 schema.static("updateDescription", (documentTemplateId: {}, description: string) => {
@@ -26,6 +36,20 @@ schema.static("updateDescription", (documentTemplateId: {}, description: string)
             }
         })
         .exec();
+});
+
+schema.static("load", (documentTemplateId: {}) => {
+    return DocumentTemplate.findOne({ "_id": documentTemplateId }).exec();
+});
+
+schema.static("list", (options: ListOptions) => {
+    const criteria = options.criteria;
+    const page = options.page;
+    const limit = options.limit;
+    return this.find(criteria)
+      .limit(limit)
+      .skip(limit * page)
+      .exec();
 });
 
 export type DocumentTemplateModel = Model<IDocumentTemplate> & IDocumentTemplate;

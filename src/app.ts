@@ -1,6 +1,11 @@
 import * as express from "express";
 import { json, urlencoded } from "body-parser";
 import * as http from "http";
+import * as compression from "compression";
+import * as morgan from "morgan";
+
+var logger = morgan('combined');
+var port = process.env.PORT || 8080;        // set our port
 
 process.env.NODE_ENV = "testing";
 
@@ -15,6 +20,12 @@ app.use(json());
 app.use(urlencoded({
     extended: true
 }));
+
+app.use(
+    morgan('dev', {
+        skip: function (req, res) { return req.url.indexOf('.jpg') != -1; }
+    })
+);
 
 app.get("/", (request: express.Request, response: express.Response) => {
     response.json({

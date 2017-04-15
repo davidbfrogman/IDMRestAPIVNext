@@ -17,20 +17,4 @@ describe("Models Document Template", () => {
            expect(res._id).to.be.true;
         });
     });
-
-    // it("should update user", async(done: Function) => {
-    //     const results: { nModified: number} = await Author.updateAuthor(authorObject._id, "He is not writer");
-
-    //     expect(results.nModified).toEqual(1);
-    //     done();
-    // });
-
-    // it("should update by age", async(done: Function) => {
-    //     const results: { nModified: number} = await Author.updateByAge(21, "Good one :)");
-    //     const author: IAuthor = <IAuthor>await Author.findById(authorObject._id).exec();
-
-    //     expect(author.description).toEqual("Good one :)");
-    //     expect(results.nModified).toEqual(1);
-    //     done();
-    // });
 });
