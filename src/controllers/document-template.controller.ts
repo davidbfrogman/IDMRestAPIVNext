@@ -1,28 +1,27 @@
-import { Router, Request, Response } from "express";
+import { Router, Request, Response, RequestParamHandler, NextFunction, RequestHandler } from "express";
 import { DocumentTemplate } from "../models/document-template";
 import { Schema, Model, Document } from "mongoose";
 
-export class DocumentTemplateController{
-// const mongoose = require('mongoose');
-// const { wrap: async } = require('co');
-// const only = require('only');
-// const { respond, respondOrRedirect } = require('../utils');
-// const Article = mongoose.model('Article');
-// const assign = Object.assign;
+export class DocumentTemplateController {
+  // const mongoose = require('mongoose');
+  // const { wrap: async } = require('co');
+  // const only = require('only');
+  // const { respond, respondOrRedirect } = require('../utils');
+  // const Article = mongoose.model('Article');
+  // const assign = Object.assign;
 
-    /**
- * Load
- */
-public async Load(req: Request, res: Response, next: any, id: {}) {
-  try {
-    req["documentTemplate"] = await new DocumentTemplate().load(id);
-    if (!req["documentTemplate"]) return next(new Error('Document Template not found'));
-  } catch (err) {
-    return next(err);
+  /**
+  * Load
+  */
+  public async Load(req: Request, res: Response, next: NextFunction, id: any, name: string): Promise<any> {
+    try {
+      req["documentTemplate"] = await new DocumentTemplate().load(id);
+      if (!req["documentTemplate"]) return next(new Error('Document Template not found'));
+    } catch (err) {
+      return next(err);
+    }
+    next();
   }
-  next();
-}
-
 }
 
 // /**
