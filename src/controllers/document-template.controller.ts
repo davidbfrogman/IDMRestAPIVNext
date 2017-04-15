@@ -15,9 +15,7 @@ export class DocumentTemplateController{
  */
 public async Load(req: Request, res: Response, next: any, id: {}) {
   try {
-
-    var documentTemplate = await new DocumentTemplate().load(id);
-    req["documentTemplate"] = documentTemplate;
+    req["documentTemplate"] = await new DocumentTemplate().load(id);
     if (!req["documentTemplate"]) return next(new Error('Document Template not found'));
   } catch (err) {
     return next(err);
