@@ -40,7 +40,7 @@ app.use((err: Error & { status: number }, request: express.Request, response: ex
         error: "Server error"
     })
 });
-
+//
 app.use("/api", new DocumentTemplateRouter().getRouter());
 app.use("/api/docs", new APIDocsRouter().getRouter());
 

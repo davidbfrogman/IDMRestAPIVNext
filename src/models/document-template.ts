@@ -46,7 +46,7 @@ schema.static("list", (options: ListOptions) => {
     const criteria = options.criteria;
     const page = options.page;
     const limit = options.limit;
-    return this.find(criteria)
+    return DocumentTemplate.find(criteria)
       .limit(limit)
       .skip(limit * page)
       .exec();
