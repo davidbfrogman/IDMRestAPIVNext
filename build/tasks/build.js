@@ -13,7 +13,7 @@ gulp.task('build-system', function () {
     //   .pipe(gulp.dest('dist'));
     gutil.log(`== building typescript to ${paths.output} ==`);
     var tsProject = ts.createProject('tsconfig.json');
-    var tsResult = gulp.src('src/**/*.ts')
+    var tsResult = gulp.src(paths.source)
         .pipe(sourcemaps.init()) // This means sourcemaps will be generated 
         .pipe(tsProject());
  

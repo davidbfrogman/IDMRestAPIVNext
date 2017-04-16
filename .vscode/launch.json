@@ -10,7 +10,7 @@
             "type": "node",
             "request": "launch",
             "name": "Launch Program",
-            "program": "${workspaceRoot}/src/app.ts",
+            "program": "${workspaceRoot}/src/server.ts",
             "outFiles": [
                 "${workspaceRoot}/dist/**/*.js"
             ],

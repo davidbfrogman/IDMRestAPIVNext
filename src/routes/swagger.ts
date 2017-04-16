@@ -1,7 +1,7 @@
-import { Router, Response } from "express";
+import { Router, Response } from 'express';
 import swaggerJSDoc = require('swagger-jsdoc');
-import { readdirSync, statSync } from "fs";
-import { resolve, join } from "path";
+import { readdirSync, statSync } from 'fs';
+import { resolve, join } from 'path';
 
 export class APIDocsRouter {
 
@@ -16,7 +16,7 @@ export class APIDocsRouter {
          *
          * @link https://github.com/OAI/OpenAPI-Specification/tree/master/examples/v2.0/yaml
          */
-        this.router.get("/", (_: {}, response: Response) => {
+        this.router.get('/', (_: {}, response: Response) => {
 
             let urls: string[] = [];
 
@@ -26,14 +26,14 @@ export class APIDocsRouter {
                 apis: urls,
                 swaggerDefinition: {
                     info: {
-                        description: "API documentation.",
-                        title: "API",
-                        version: "1.0.0"
+                        description: 'API documentation.',
+                        title: 'API',
+                        version: '1.0.0'
                     },
                 }
             };
 
-            response.setHeader("Content-Type", "application/json");
+            response.setHeader('Content-Type', 'application/json');
             response.send(swaggerJSDoc(options));
         });
 
@@ -49,13 +49,13 @@ export class APIDocsRouter {
             .map(function (file) {
 
                 // filter out .map and hidden files
-                if (file.search(".map") < 0 && file.search(/^\./) < 0) {
+                if (file.search('.map') < 0 && file.search(/^\./) < 0) {
 
                     if (statSync(join(dir, file)).isDirectory()) {
                         filelist = APIDocsRouter.getAllRoutes(join(dir, file), filelist);
                     }
                     else {
-                        if (file.search(".ts") > 0) {
+                        if (file.search('.ts') > 0) {
                             filelist.push(join(dir, file));
                         }
                     }

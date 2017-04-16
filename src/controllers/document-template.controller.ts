@@ -1,146 +1,61 @@
-import { Router, Request, Response, RequestParamHandler, NextFunction, RequestHandler } from "express";
-import { DocumentTemplate } from "../models/document-template";
+import { Router, Request, Response, RequestParamHandler, NextFunction, RequestHandler } from 'express';
+import { DocumentTemplate } from '../models/document-template';
 import mongoose = require('mongoose');
-import { Schema, Model, Document } from "mongoose";
-import {ListOptions} from '../models/list-options';
+import { Schema, Model, Document } from 'mongoose';
+import { ListOptions } from '../models/list-options';
+import { BaseController } from "./base/base.controller";
 
-export class DocumentTemplateController {
-  // const mongoose = require('mongoose');
-  // const { wrap: async } = require('co');
-  // const only = require('only');
-  // const { respond, respondOrRedirect } = require('../utils');
+export class DocumentTemplateController extends BaseController {
   documentTemplate = mongoose.model('DocumentTemplate');
-  // const assign = Object.assign;
 
-  /**
-  * Load
-  */
-  public async Load(req: Request, res: Response, next: NextFunction): Promise<any> {
-    try {
-      req["documentTemplate"] = await DocumentTemplate.list(new ListOptions());
-      if (!req["documentTemplate"]) return next(new Error('Document Template not found'));
-    } catch (err) {
-      return next(err);
-    }
-    next();
+  public async list(request: Request, response: Response): Promise<any> {
+    const options: ListOptions = new ListOptions({}, (request.query.page > 0 ? request.query.page : 1) - 1, 30);
+    const documentTemplates = await DocumentTemplate.list(options);
+    response.json(documentTemplates);
+  }
+
+  public async single(request: Request, response: Response, next: NextFunction): Promise<any> {
+    await DocumentTemplate.findById(super.getId(request), (err, docTemplate)=> {
+      if (err) { next(err) }
+      response.json(docTemplate);
+    });
+  }
+
+  public async blank(request: Request, response: Response, next: NextFunction): Promise<any> {
+    response.json(new DocumentTemplate());
+  }
+
+  public async count(request: Request, response: Response, next: NextFunction): Promise<any> {
+    await DocumentTemplate.count({}, (error: any, count: Number)=> {
+      if (error) { next(error) }
+      response.json({
+        CollectionName: DocumentTemplate.collection.name,
+        CollectionCount: count
+      });
+    })
+  }
+
+  public async create(request: Request, response: Response, next: NextFunction) {
+    const documentTemplate = new DocumentTemplate(request.body);
+    await documentTemplate.save( (error: any, item: any, numberAffected: number)=> {
+      if (error) { next(error) }
+      response.json({ item });
+    });
+  }
+
+  public async update(request: Request, response: Response, next: NextFunction) {
+    await DocumentTemplate.findByIdAndUpdate(super.getId(request), new DocumentTemplate(request.body), { new: true }, (error: Error, createdItem) => {
+      if (error) { next(error) }
+      response.json(createdItem);
+    });
+  }
+  public async destroy(request: Request, response: Response, next: NextFunction) {
+    await DocumentTemplate.findByIdAndRemove(super.getId(request), (error, deletedItem) => {
+      if (error) { next(error) }
+      response.json({
+        ItemRemovedId: super.getId(request),
+        ItemRemoved: deletedItem
+      });
+    });
   }
 }
-
-// /**
-//  * Module dependencies.
-//  */
-
-
-
-
-// /**
-//  * List
-//  */
-// exports.index = async(function* (req, res) {
-//   const page = (req.query.page > 0 ? req.query.page : 1) - 1;
-//   const _id = req.query.item;
-//   const limit = 30;
-//   const options = {
-//     limit: limit,
-//     page: page
-//   };
-
-//   if (_id) options.criteria = { _id };
-
-//   const articles = yield Article.list(options);
-//   const count = yield Article.count();
-
-//   respond(res, 'articles/index', {
-//     title: 'Articles',
-//     articles: articles,
-//     page: page + 1,
-//     pages: Math.ceil(count / limit)
-//   });
-// });
-
-// /**
-//  * New article
-//  */
-
-// exports.new = function (req, res){
-//   res.render('articles/new', {
-//     title: 'New Article',
-//     article: new Article()
-//   });
-// };
-
-// /**
-//  * Create an article
-//  * Upload an image
-//  */
-
-// exports.create = async(function* (req, res) {
-//   const article = new Article(only(req.body, 'title body tags'));
-//   article.user = req.user;
-//   try {
-//     yield article.uploadAndSave(req.file);
-//     respondOrRedirect({ req, res }, `/articles/${article._id}`, article, {
-//       type: 'success',
-//       text: 'Successfully created article!'
-//     });
-//   } catch (err) {
-//     respond(res, 'articles/new', {
-//       title: article.title || 'New Article',
-//       errors: [err.toString()],
-//       article
-//     }, 422);
-//   }
-// });
-
-// /**
-//  * Edit an article
-//  */
-
-// exports.edit = function (req, res) {
-//   res.render('articles/edit', {
-//     title: 'Edit ' + req.article.title,
-//     article: req.article
-//   });
-// };
-
-// /**
-//  * Update article
-//  */
-
-// exports.update = async(function* (req, res){
-//   const article = req.article;
-//   assign(article, only(req.body, 'title body tags'));
-//   try {
-//     yield article.uploadAndSave(req.file);
-//     respondOrRedirect({ res }, `/articles/${article._id}`, article);
-//   } catch (err) {
-//     respond(res, 'articles/edit', {
-//       title: 'Edit ' + article.title,
-//       errors: [err.toString()],
-//       article
-//     }, 422);
-//   }
-// });
-
-// /**
-//  * Show
-//  */
-
-// exports.show = function (req, res){
-//   respond(res, 'articles/show', {
-//     title: req.article.title,
-//     article: req.article
-//   });
-// };
-
-// /**
-//  * Delete an article
-//  */
-
-// exports.destroy = async(function* (req, res) {
-//   yield req.article.remove();
-//   respondOrRedirect({ req, res }, '/articles', {}, {
-//     type: 'info',
-//     text: 'Deleted successfully'
-//   });
-// });

@@ -1,5 +1,5 @@
-import { mongoose } from "../config/database";
-import { Schema, Model, Document } from "mongoose";
+import { mongoose } from '../config/database';
+import { Schema, Model, Document } from 'mongoose';
 import {ListOptions} from './list-options';
 
 export interface IDocumentTemplate extends Document {
@@ -14,7 +14,7 @@ export interface IDocumentTemplate extends Document {
 
 const schema = new Schema({
     name: { type: String },
-    createdOn: { type: Date, "default": Date.now },
+    createdOn: { type: Date, 'default': Date.now },
     modifiedOn: { type: Date, },
     description: { type: String }
 });
@@ -26,23 +26,23 @@ schema.pre('save',(next)=>{
     next();
 });
 
-schema.static("updateDescription", (documentTemplateId: {}, description: string) => {
+schema.static('updateDescription', (documentTemplateId: {}, description: string) => {
     return DocumentTemplate.update(
-        { "_id": documentTemplateId },
+        { '_id': documentTemplateId },
         {
-            "$set": {
-                "description": description,
-                "modifiedOn": Date.now
+            '$set': {
+                'description': description,
+                'modifiedOn': Date.now
             }
         })
         .exec();
 });
 
-schema.static("load", (documentTemplateId: {}) => {
-    return DocumentTemplate.findOne({ "_id": documentTemplateId }).exec();
+schema.static('load', (documentTemplateId: {}) => {
+    return DocumentTemplate.findOne({ '_id': documentTemplateId }).exec();
 });
 
-schema.static("list", (options: ListOptions) => {
+schema.static('list', (options: ListOptions) => {
     const criteria = options.criteria;
     const page = options.page;
     const limit = options.limit;
@@ -54,4 +54,4 @@ schema.static("list", (options: ListOptions) => {
 
 export type DocumentTemplateModel = Model<IDocumentTemplate> & IDocumentTemplate;
 
-export const DocumentTemplate: DocumentTemplateModel = <DocumentTemplateModel>mongoose.model<IDocumentTemplate>("DocumentTemplate", schema);
+export const DocumentTemplate: DocumentTemplateModel = <DocumentTemplateModel>mongoose.model<IDocumentTemplate>('DocumentTemplate', schema);
