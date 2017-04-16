@@ -11,11 +11,11 @@ export abstract class BaseRouter<TController extends BaseController<Document>>{
     public abstract getRouter(): Router;
     public controller: TController;
 
-    public constructor(){
+    public constructor() {
 
     }
 
-public getBaseRouter(): Router {
+    public getBaseRouter(): Router {
 
         this.router.get(`${this.routeRoot}`, async (request: Request, response: Response, next: NextFunction) => {
             try {
