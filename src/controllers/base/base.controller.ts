@@ -1,71 +1,74 @@
 import { Router, Request, Response, RequestParamHandler, NextFunction, RequestHandler } from 'express';
 import mongoose = require('mongoose');
 import { Schema, Model, Document } from 'mongoose';
-import { ListOptions } from '../../models/list-options';
 
-export abstract class BaseController<TModel extends Document>{
-    public abstract modelName: string;
-    mgModel = mongoose.model(this.modelName);
+export abstract class BaseController<ModelType extends Document>{
 
-  public async list(request: Request, response: Response): Promise<any> {
-    const options: ListOptions = new ListOptions({}, (request.query.page > 0 ? request.query.page : 1) - 1, 30);
-    const documentTemplates = await new TModel()..list(options);
-    response.json(documentTemplates);
+  mongooseSchemaInstance: Model<ModelType>;
+
+  public constructor() {
+  }
+
+  public getId(request: Request): string {
+    return request && request.params ? request.params['id'] : null;
+  }
+
+  public async list(request: Request, response: Response, next: NextFunction): Promise<any> {
+    await this.mongooseSchemaInstance.find((error: Error, listedItems: ModelType[]) => {
+      if (error) { next(error) }
+      response.json(listedItems);
+    });
   }
 
   public async single(request: Request, response: Response, next: NextFunction): Promise<any> {
-    await DocumentTemplate.findById(super.getId(request), (err, docTemplate)=> {
+    await this.mongooseSchemaInstance.findById(this.getId(request), (err, item) => {
       if (err) { next(err) }
-      response.json(docTemplate);
+      response.json(item);
     });
   }
 
   public async blank(request: Request, response: Response, next: NextFunction): Promise<any> {
-    response.json(new DocumentTemplate());
+    response.json(new this.mongooseSchemaInstance());
   }
 
   public async count(request: Request, response: Response, next: NextFunction): Promise<any> {
-    await DocumentTemplate.count({}, (error: any, count: Number)=> {
+    await this.mongooseSchemaInstance.count({}, (error: any, count: Number) => {
       if (error) { next(error) }
       response.json({
-        CollectionName: DocumentTemplate.collection.name,
+        CollectionName: this.mongooseSchemaInstance.collection.name,
         CollectionCount: count
       });
     })
   }
 
   public async create(request: Request, response: Response, next: NextFunction) {
-    const documentTemplate = new DocumentTemplate(request.body);
-    await documentTemplate.save( (error: any, item: any, numberAffected: number)=> {
+    const documentTemplate = new this.mongooseSchemaInstance(request.body);
+    await documentTemplate.save((error: any, item: any, numberAffected: number) => {
       if (error) { next(error) }
       response.json({ item });
     });
   }
 
   public async update(request: Request, response: Response, next: NextFunction) {
-    await DocumentTemplate.findByIdAndUpdate(super.getId(request), new DocumentTemplate(request.body), { new: true }, (error: Error, createdItem) => {
+    await this.mongooseSchemaInstance.findByIdAndUpdate(this.getId(request), new this.mongooseSchemaInstance(request.body), { new: true }, (error: Error, createdItem) => {
       if (error) { next(error) }
       response.json(createdItem);
     });
   }
   public async destroy(request: Request, response: Response, next: NextFunction) {
-    await DocumentTemplate.findByIdAndRemove(super.getId(request), (error, deletedItem) => {
+    await this.mongooseSchemaInstance.findByIdAndRemove(this.getId(request), (error, deletedItem) => {
       if (error) { next(error) }
       response.json({
-        ItemRemovedId: super.getId(request),
+        ItemRemovedId: this.getId(request),
         ItemRemoved: deletedItem
       });
     });
   }
 
   public async query(request: Request, response: Response, next: NextFunction) {
-    await DocumentTemplate.find(request.body,(error: Error, items: IDocumentTemplate[])=>{
+    await this.mongooseSchemaInstance.find(request.body, (error: Error, items: ModelType[]) => {
       if (error) { next(error) }
       response.json({ items });
     });
   }
-
-    public getId(request: Request) : string{
-        return request && request.params ? request.params['id']: null;
-    }
 }
