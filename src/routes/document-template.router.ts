@@ -18,6 +18,13 @@ export class DocumentTemplateRouter {
             catch (error) { next(error) }
         });
 
+        this.router.post('/document-templates/query', async (request: Request, response: Response, next: NextFunction) => {
+            try {
+                await this.documentTemplateController.query(request, response, next);
+            }
+            catch (error) { next(error) }
+        });
+
         this.router.get('/document-templates/blank', async (request: Request, response: Response, next: NextFunction) => {
             try {
                 await this.documentTemplateController.blank(request, response, next);

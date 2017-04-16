@@ -1,11 +1,12 @@
 import { Router, Request, Response, RequestParamHandler, NextFunction, RequestHandler } from 'express';
-import { DocumentTemplate } from '../models/document-template';
+import { DocumentTemplate, IDocumentTemplate } from '../models/document-template';
 import mongoose = require('mongoose');
 import { Schema, Model, Document } from 'mongoose';
 import { ListOptions } from '../models/list-options';
 import { BaseController } from "./base/base.controller";
 
-export class DocumentTemplateController extends BaseController {
+export class DocumentTemplateController extends BaseController<DocumentTemplate> {
+  public modelName: string = 'DocumentTemplate';
   documentTemplate = mongoose.model('DocumentTemplate');
 
   public async list(request: Request, response: Response): Promise<any> {
@@ -56,6 +57,13 @@ export class DocumentTemplateController extends BaseController {
         ItemRemovedId: super.getId(request),
         ItemRemoved: deletedItem
       });
+    });
+  }
+
+  public async query(request: Request, response: Response, next: NextFunction) {
+    await DocumentTemplate.find(request.body,(error: Error, items: IDocumentTemplate[])=>{
+      if (error) { next(error) }
+      response.json({ items });
     });
   }
 }
