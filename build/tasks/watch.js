@@ -14,6 +14,8 @@ function reportChange(event) {
 gulp.task('watch', ['serve'], function() {
   gutil.log('== Setting up watchers for directories ==');   
   gulp.watch(paths.source, ['build-system']).on('change', reportChange);
-  gulp.watch(paths.html, ['build-html']).on('change', reportChange);
-  gulp.watch(paths.styles, ['build-css-styles']).on('change', reportChange);
+  gulp.watch(paths.yaml, ['copy-yaml']).on('change', reportChange);
+  gulp.watch(paths.json, ['copy-json']).on('change', reportChange);
+  gulp.watch(paths.css, ['copy-css']).on('change', reportChange);
+  gulp.watch(paths.swagger, ['copy-swagger']).on('change', reportChange);
 });

@@ -26,7 +26,8 @@
     "method-override": "^2.3.8",
     "mongoose": "^4.6.1",
     "morgan": "^1.8.1",
-    "swagger-jsdoc": "^1.8.2"
+    "swagger-jsdoc": "^1.8.2",
+    "swagger-ui-express": "^1.0.7"
   },
   "devDependencies": {
     "@types/body-parser": "0.0.33",

@@ -7,13 +7,15 @@ import { join } from 'path';
 import { json, urlencoded } from 'body-parser';
 import mongoose = require('mongoose');
 import methodOverride = require('method-override');
-
+ 
 // Router Imports ======================================================
 import { DocumentTemplateRouter } from './routes/document-template.router';
 import { APIDocsRouter } from './routes/swagger';
 
 const port = process.env.PORT || 8080;        // set our port
 const app: express.Application = express();
+const swaggerUi = require('swagger-ui-express');
+const swaggerDocument = require('./swagger/swagger.json');
 
 // Middleware ==========================================================
 app.use(json());
@@ -34,7 +36,12 @@ app.use(morgan('dev'));
 
 // Routers =============================================================
 app.use('/api', new DocumentTemplateRouter().getRouter());
-app.use('/api/docs', new APIDocsRouter().getRouter());
+
+//var css = fs.readFileSync(__dirname + '/swagger/swagger-ui.css');
+//app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument,true, null, css.toString(), null));
+app.use('/api-docs', express.static(__dirname + '/swagger/swagger-ui'));
+app.use('/swagger', express.static(__dirname + '/swagger/'));
+//app.use(express.static(__dirname + '/public'));
 
 // Homepage ============================================================
 app.get('/', (request: express.Request, response: express.Response) => {

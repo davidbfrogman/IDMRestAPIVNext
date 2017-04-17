@@ -3,11 +3,14 @@ var outputRoot = 'dist/';
 
 module.exports = {
   root: appRoot,
+  yaml: appRoot + '**/*.yaml',
+  json: appRoot + '**/*.json',
   source: appRoot + '**/*.ts',
   data: appRoot + '**/*.json',
   html: appRoot + '**/*.html',
-  styles: appRoot + '**/*.css',
+  css: appRoot + '**/*.css',
   content: appRoot + '**/*.png',
+  swagger: appRoot + 'swagger/swagger-ui/' + '**/*',
   output: outputRoot,
   doc: './doc',
   e2eSpecsSrc: 'test/e2e/src/*.js',

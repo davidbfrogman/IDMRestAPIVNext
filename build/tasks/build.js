@@ -9,8 +9,7 @@ var mapSources = require('@gulp-sourcemaps/map-sources');
 var paths = require('../paths');
  
 gulp.task('build-system', function () {
-    // gulp.src('src/**/*.ts')
-    //   .pipe(gulp.dest('dist'));
+
     gutil.log(`== building typescript to ${paths.output} ==`);
     var tsProject = ts.createProject('tsconfig.json');
     var tsResult = gulp.src(paths.source)
@@ -25,6 +24,26 @@ gulp.task('build-system', function () {
         .pipe(gulp.dest(paths.output));
 });
 
+gulp.task('copy-yaml', function () {
+    gulp.src(paths.yaml)
+      .pipe(gulp.dest(paths.output));
+});
+
+gulp.task('copy-json', function () {
+    gulp.src(paths.json)
+      .pipe(gulp.dest(paths.output));
+});
+
+gulp.task('copy-css', function () {
+    gulp.src(paths.css)
+      .pipe(gulp.dest(paths.output));
+});
+
+gulp.task('copy-swagger', function () {
+    gulp.src('src/swagger/swagger-ui/**/*')
+      .pipe(gulp.dest('dist/swagger/swagger-ui/'));
+});
+
 // this task calls the clean task (located
 // in ./clean.js), then runs the build-system
 // and build-html tasks in parallel
@@ -32,7 +51,7 @@ gulp.task('build-system', function () {
 gulp.task('build', function(callback) {
   return runSequence(
     'clean',
-    ['build-system'],
+    ['build-system', 'copy-yaml', 'copy-json', 'copy-css', 'copy-swagger'],
     callback
   );
 });
