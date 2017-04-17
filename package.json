@@ -20,6 +20,7 @@
     "@types/compression": "0.0.33",
     "@types/morgan": "^1.7.32",
     "@types/winston": "^2.3.0",
+    "bluebird": "^3.5.0",
     "body-parser": "^1.15.2",
     "compression": "^1.6.2",
     "express": "^4.15.2",

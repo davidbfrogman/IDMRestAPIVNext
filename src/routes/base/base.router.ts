@@ -31,7 +31,7 @@ export abstract class BaseRouter<TController extends BaseController<Document>>{
         })
         //Blank Operation for returning a blank new'd up object. Useful for seeing defaults on an object
         .get(`${this.resource}/blank`, async (request: Request, response: Response, next: NextFunction) => {
-                await this.controller.blank(request, response, next);
+                this.controller.blank(request, response, next);
         })
         //Count Operation for seeing how many of a resource there is, which accepts query object
         .get(`${this.resource}/count`, async (request: Request, response: Response, next: NextFunction) => {
