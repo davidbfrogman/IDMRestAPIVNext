@@ -2,15 +2,31 @@
 # as a demonstration of an API spec in YAML
 swagger: '2.0'
 info:
-  title: IDM Rest API
-  description: Document Storage and more
+  description: "This is the IDM RestAPI with a mongo db backing it.  You can see more about \
+  \ [mongo](https://www.mongodb.com/), [express](https://expressjs.com/), [mongoose](http://mongoosejs.com/)"
   version: "1.0.0"
+  title: "IDM Rest API"
+  contact:
+    email: "davebrown.dev@gmail.com"
+  license:
+    name: "MIT Open Source"
+    url: "https://opensource.org/licenses/MIT"
 # the domain of the service
 host: localhost:8080
 # array of all schemes that your API supports
 schemes:
   - http
 # will be prefixed to all paths
+tags:
+- name: "Documents"
+  description: "Documents, Templates, and more"
+  externalDocs:
+    description: "Find out more"
+    url: "http://swagger.io"
+- name: "Admin"
+  description: "Administrative tools"
+- name: "Utils"
+  description: "Utility operations"
 basePath: /api
 produces:
   - application/json

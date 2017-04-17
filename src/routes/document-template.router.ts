@@ -9,11 +9,11 @@ import { BaseRouter } from "./base/base.router";
 export class DocumentTemplateRouter extends BaseRouter<DocumentTemplateController> {
     public router: Router = Router();
     public documentTemplateController = new DocumentTemplateController();
-    public routeRoot: string;
+    public resource: string;
 
     public constructor(){
         super();
-        this.routeRoot = '/document-templates';
+        this.resource = '/document-templates';
         super.controller = this.documentTemplateController;
     }
 
