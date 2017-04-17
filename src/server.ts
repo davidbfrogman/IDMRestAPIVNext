@@ -81,6 +81,7 @@ log.info(`Listening on http://localhost:${port}`);
 // This happens a lot in the database layer, where you have an error handler that calls 'next' and bypasses 
 // the gc for promises.  At some point you might want to look into cleaning that up.  
 // if needed you can add .catch(()=>{}) which will completely swallow the unhandled promise rejection.  This felt dirty. 
+// This will prevent the server from becoming unusable.  Error happens, it's caught here, and server still runs.
 process.on('unhandledRejection', (reason, p) => {
   //log.info('Unhandled Promise Rejection Promise Location: ', p);
   log.info('Unhandled Promise Rejection - Could Be Dangerous See server.js for more details \n Promise Rejection Reason:', reason);
