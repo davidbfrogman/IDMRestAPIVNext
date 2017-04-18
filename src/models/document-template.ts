@@ -1,23 +1,23 @@
 import { mongoose } from '../config/database';
 import { Schema, Model, Document } from 'mongoose';
+import { IField, FieldSchema } from './field'
+
 
 export interface IDocumentTemplate extends Document {
     name: string
+    description?: string;
+    fields: Array<IField>;
     createdAt?: Date; //Automatically created by mongoose.
     modifiedAt?: Date; //Automatically created by mongoose.
-    description?: string;
-    isVersioningEnabled: boolean;
-    version: string;
 }
 
-export const schema = new Schema({
+export const DocumentTemplateSchema = new Schema({
     name: { type: String },
     description: { type: String },
-    isVersioningEnabled: {type: Boolean, required: true},
-    version: {type: String}
+    fields:[FieldSchema],
 },{timestamps:true});
 
-schema.pre('save',(next)=>{
+DocumentTemplateSchema.pre('save',(next)=>{
     // if(this.modifiedOn){
     //     this.modifiedOn = new Date();
     // }
@@ -26,4 +26,4 @@ schema.pre('save',(next)=>{
 
 export type DocumentTemplateModel = Model<IDocumentTemplate> & IDocumentTemplate;
 
-export const DocumentTemplateMI: DocumentTemplateModel = <DocumentTemplateModel>mongoose.model<IDocumentTemplate>('DocumentTemplate', schema);
+export const DocumentTemplateMI: DocumentTemplateModel = <DocumentTemplateModel>mongoose.model<IDocumentTemplate>('DocumentTemplate', DocumentTemplateSchema);

@@ -55,7 +55,7 @@ app.get('/', (request: express.Request, response: express.Response) => {
 
 // Catch all handler ===================================================
 app.get('*', function(req, res, next) {
-  var err = new Error('No router was found for your request, page not found.');
+  var err = new Error(`No router was found for your request, page not found.  Requested Page: ${req.originalUrl}`);
   err['status'] = 404;
   next(err);
 });
