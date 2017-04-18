@@ -17,10 +17,8 @@ export const DocumentTemplateSchema = new Schema({
     fields:[FieldSchema],
 },{timestamps:true});
 
-DocumentTemplateSchema.pre('save',(next)=>{
-    // if(this.modifiedOn){
-    //     this.modifiedOn = new Date();
-    // }
+DocumentTemplateSchema.pre('save',function(next){
+    //If there's any validators, this field requires validation.
     next();
 });
 

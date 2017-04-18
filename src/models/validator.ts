@@ -3,7 +3,7 @@ import { Schema, Model, Document } from 'mongoose';
 import { ValidationType, EnumHelper } from '../enumerations';
 
 export interface IValidator extends Document {
-    validationType: ValidationType;
+    validationType: ValidationType; //Length, required, regex
     min: number;
     max: number;
     regex: string;
@@ -20,10 +20,8 @@ export const ValidatorSchema = new Schema({
     dateMin: {type:Date}
 },{timestamps:true});
 
-ValidatorSchema.pre('save',(next)=>{
-    // if(this.modifiedOn){
-    //     this.modifiedOn = new Date();
-    // }
+ValidatorSchema.pre('save',function(next){
+    //If there's any validators, this field requires validation.
     next();
 });
 

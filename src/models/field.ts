@@ -25,10 +25,16 @@ export const FieldSchema = new Schema({
     value: {type: String}
 },{timestamps:true});
 
-FieldSchema.pre('save',(next)=>{
-    // if(this.modifiedOn){
-    //     this.modifiedOn = new Date();
-    // }
+//If you do any pre save methods, and you use fat arrow syntax 'this' doesn't refer to the document.
+FieldSchema.pre('save',function(next){
+    //If there's any validators, this field requires validation.
+    this.requiresValidation = this.validators && this.validators.length > 0
+    next();
+});
+//If you do any pre save methods, and you use fat arrow syntax 'this' doesn't refer to the document.
+FieldSchema.pre('update',function(next){
+    //If there's any validators, this field requires validation.
+    this.requiresValidation = this.validators && this.validators.length > 0
     next();
 });
 
