@@ -4,7 +4,7 @@ import { AuthenticationController } from '../controllers/authentication.controll
 import { Request, Response, RequestHandler, } from 'express';
 import { RequestHandlerParams, NextFunction } from '@types/express-serve-static-core';
 import { IncomingMessage } from 'http';
-import { BaseRouter } from "./base/base.router";
+import { BaseRouter } from './base/base.router';
 
 export class AuthenticationRouter extends BaseRouter<AuthenticationController> {
     public router: Router = Router();
