@@ -1,7 +1,7 @@
 import { Router, Request, Response, RequestParamHandler, NextFunction, RequestHandler } from 'express';
 import mongoose = require('mongoose');
 import { Schema, Model, Document } from 'mongoose';
-import { SearchCriteria } from "./search-criteria";
+import { SearchCriteria } from "../../models/search-criteria";
 import log = require('winston');
 
 export abstract class BaseController<ModelType extends Document>{

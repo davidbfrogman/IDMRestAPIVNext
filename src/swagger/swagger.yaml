@@ -31,63 +31,506 @@ basePath: /api
 produces:
   - application/json
 paths:
-  /document-templates:
+  "/document-templates":
     get:
-      summary: gets the templates for a document
-      description: |
-        This gives us back a list of document templates
+      description: 'TODO: Add Description'
+      summary: criteria /document-templates
       tags:
-        - Documents
-      responses:
-        200:
-          description: An array of document templates
-          schema:
-            type: array
-            items:
-              $ref: '#/definitions/document-template'
-        default:
-          description: Unexpected error
-          schema:
-            $ref: '#/definitions/Error'
-definitions:
-  document-template:
-    type: object
-    properties:
-      name:
+      - Misc
+      operationId: criteria /document-templates
+      produces:
+      - application/json
+      parameters:
+      - name: criteria
+        in: query
+        required: true
         type: string
-        description: the name of the document template
-      description:
+        description: ''
+      - name: sort
+        in: query
+        required: true
         type: string
-        description: Description of document template.
-      display-name:
-        type: string
-        description: Display name of document template.
-      items:
-        type: array
-        items:
-          $ref: '#/definitions/idm-document'
-  idm-document:
-    type: object
-    properties:
-      name:
-        type: string
-        description: the name of the document template
-      description:
-        type: string
-        description: Description of document template.
-      display-name:
-        type: string
-        description: Display name of document template.
-      document-template-id:
-        type: string
-        description: ID of the template for this document
-  Error:
-    type: object
-    properties:
-      code:
+        description: ''
+      - name: limit
+        in: query
+        required: true
         type: integer
         format: int32
-      message:
+        description: ''
+      - name: Accept
+        in: header
+        required: true
+        type: string
+        description: ''
+      responses:
+        '200':
+          description: ''
+      security: []
+      x-unitTests:
+      - request:
+          method: GET
+          uri: '/document-templates?criteria={"name": "New Test Doc Template"}&sort={"createdOn":
+            -1}&limit=5'
+          headers:
+            Accept: application/json
+        expectedResponse:
+          x-allowExtraHeaders: true
+          x-bodyMatchMode: NONE
+          x-arrayOrderedMatching: false
+          x-arrayCheckCount: false
+          x-matchResponseSchema: true
+          headers: {}
+        x-testShouldPass: true
+        x-testEnabled: true
+        x-testName: criteria /document-templates
+        x-testDescription: 'TODO: Add Description'
+      x-operation-settings:
+        CollectParameters: false
+        AllowDynamicQueryParameters: false
+        AllowDynamicFormParameters: false
+        IsMultiContentStreaming: false
+  "/document-templates/blank":
+    get:
+      description: 'TODO: Add Description'
+      summary: "/api/document-templates/blank"
+      tags:
+      - Misc
+      operationId: "/api/document-templates/blank"
+      produces:
+      - application/json
+      parameters: []
+      responses:
+        '200':
+          description: ''
+      security: []
+      x-unitTests:
+      - request:
+          method: GET
+          uri: "/document-templates/blank"
+        expectedResponse:
+          x-allowExtraHeaders: true
+          x-bodyMatchMode: NONE
+          x-arrayOrderedMatching: false
+          x-arrayCheckCount: false
+          x-matchResponseSchema: true
+          headers: {}
+        x-testShouldPass: true
+        x-testEnabled: true
+        x-testName: "/api/document-templates/blank"
+        x-testDescription: 'TODO: Add Description'
+      x-operation-settings:
+        CollectParameters: false
+        AllowDynamicQueryParameters: false
+        AllowDynamicFormParameters: false
+        IsMultiContentStreaming: false
+  "/document-templates/58f14e187cb681211461c5a2":
+    get:
+      description: 'TODO: Add Description'
+      summary: "/document-templates/58f14e187cb681211461c5a2"
+      tags:
+      - Misc
+      operationId: "/document-templates/58f14e187cb681211461c5a2"
+      produces:
+      - application/json
+      parameters: []
+      responses:
+        '200':
+          description: ''
+      security: []
+      x-unitTests:
+      - request:
+          method: GET
+          uri: "/document-templates/58f14e187cb681211461c5a2"
+        expectedResponse:
+          x-allowExtraHeaders: true
+          x-bodyMatchMode: NONE
+          x-arrayOrderedMatching: false
+          x-arrayCheckCount: false
+          x-matchResponseSchema: true
+          headers: {}
+        x-testShouldPass: true
+        x-testEnabled: true
+        x-testName: "/document-templates/58f14e187cb681211461c5a2"
+        x-testDescription: 'TODO: Add Description'
+      x-operation-settings:
+        CollectParameters: false
+        AllowDynamicQueryParameters: false
+        AllowDynamicFormParameters: false
+        IsMultiContentStreaming: false
+  "/document-templates/count":
+    get:
+      description: 'TODO: Add Description'
+      summary: "/document-templates/count copy copy"
+      tags:
+      - Misc
+      operationId: "/document-templates/count copy copy"
+      produces:
+      - application/json
+      parameters: []
+      responses:
+        '200':
+          description: ''
+      security: []
+      x-unitTests:
+      - request:
+          method: GET
+          uri: "/document-templates/count"
+        expectedResponse:
+          x-allowExtraHeaders: true
+          x-bodyMatchMode: NONE
+          x-arrayOrderedMatching: false
+          x-arrayCheckCount: false
+          x-matchResponseSchema: true
+          headers: {}
+        x-testShouldPass: true
+        x-testEnabled: true
+        x-testName: "/document-templates/count copy copy"
+        x-testDescription: 'TODO: Add Description'
+      x-operation-settings:
+        CollectParameters: false
+        AllowDynamicQueryParameters: false
+        AllowDynamicFormParameters: false
+        IsMultiContentStreaming: false
+  "/document-templates/58f321afb7bf853a28eac174":
+    put:
+      description: 'TODO: Add Description'
+      summary: "/document-templates/58f321afb7bf853a28eac174"
+      tags:
+      - Misc
+      operationId: "/document-templates/58f321afb7bf853a28eac174"
+      produces:
+      - application/json
+      parameters:
+      - name: Body
+        in: body
+        required: true
+        description: ''
+        schema:
+          "$ref": "#/definitions/~1documentTemplates~158f321afb7bf853a28eac174request"
+      - name: Content-Type
+        in: header
+        required: true
+        type: string
+        description: ''
+      responses:
+        '200':
+          description: ''
+      security: []
+      x-unitTests:
+      - request:
+          method: PUT
+          uri: "/document-templates/58f321afb7bf853a28eac174"
+          headers:
+            Content-Type: application/json
+          body: |-
+            {
+              "_id": "58f321afb7bf853a28eac174",
+              "__v": 0,
+              "createdAt": "2017-04-16T07:56:15.186Z",
+              "description": "I have now updated the description3",
+              "name": "And a new name"
+            }
+        expectedResponse:
+          x-allowExtraHeaders: true
+          x-bodyMatchMode: NONE
+          x-arrayOrderedMatching: false
+          x-arrayCheckCount: false
+          x-matchResponseSchema: true
+          headers: {}
+        x-testShouldPass: true
+        x-testEnabled: true
+        x-testName: "/document-templates/58f321afb7bf853a28eac174"
+        x-testDescription: 'TODO: Add Description'
+      x-operation-settings:
+        CollectParameters: false
+        AllowDynamicQueryParameters: false
+        AllowDynamicFormParameters: false
+        IsMultiContentStreaming: false
+    delete:
+      description: 'TODO: Add Description'
+      summary: "/document-templates/58f321afb7bf853a28eac174"
+      tags:
+      - Misc
+      operationId: "/document-templates/58f321afb7bf853a28eac1741"
+      produces:
+      - application/json
+      parameters: []
+      responses:
+        '200':
+          description: ''
+      security: []
+      x-unitTests:
+      - request:
+          method: DELETE
+          uri: "/document-templates/58f321afb7bf853a28eac174"
+        expectedResponse:
+          x-allowExtraHeaders: true
+          x-bodyMatchMode: NONE
+          x-arrayOrderedMatching: false
+          x-arrayCheckCount: false
+          x-matchResponseSchema: true
+          headers: {}
+        x-testShouldPass: true
+        x-testEnabled: true
+        x-testName: "/document-templates/58f321afb7bf853a28eac1741"
+        x-testDescription: 'TODO: Add Description'
+      x-operation-settings:
+        CollectParameters: false
+        AllowDynamicQueryParameters: false
+        AllowDynamicFormParameters: false
+        IsMultiContentStreaming: false
+  "/document-templates/":
+    post:
+      description: 'TODO: Add Description'
+      summary: "/document-templates/"
+      tags:
+      - Misc
+      operationId: "/document-templates/"
+      produces:
+      - application/json
+      parameters:
+      - name: Body
+        in: body
+        required: true
+        description: ''
+        schema:
+          "$ref": "#/definitions/~1documentTemplates~1request"
+      - name: Content-Type
+        in: header
+        required: true
+        type: string
+        description: ''
+      responses:
+        '200':
+          description: ''
+      security: []
+      x-unitTests:
+      - request:
+          method: POST
+          uri: "/document-templates/"
+          headers:
+            Content-Type: application/json
+          body: |2-
+              {
+                "description": "Document Template Made Through Put Request",
+                "name": "PostMan Document Template For creation",
+                "fields":[{
+                  "name": "filename",
+                  "description": "This is the filename of the uploaded file",
+                  "tooltip": "filename ie. 'upload.jpg'",
+                  "fieldStyle": 1,
+                  "primitiveType": 1,
+                  "requiresValidation": false,
+                  "validators": [{
+                    "validationType": 1,
+                    "min":0,
+                    "max":100
+                  }],
+                  "value": "friendlyBoston.jpg"
+                },
+                {
+                  "name": "File Type",
+                  "description": "This is a user entered file type",
+                  "tooltip": "if you would like to specify a type, you can, and we'll try and save and render it as that type",
+                  "fieldStyle": 1,
+                  "primitiveType": 1,
+                  "requiresValidation": false,
+                  "validators": [{
+                    "validationType": 1,
+                    "min":0,
+                    "max":20
+                  }],
+                  "value": "jpg"
+                }]
+              }
+        expectedResponse:
+          x-allowExtraHeaders: true
+          x-bodyMatchMode: NONE
+          x-arrayOrderedMatching: false
+          x-arrayCheckCount: false
+          x-matchResponseSchema: true
+          headers: {}
+        x-testShouldPass: true
+        x-testEnabled: true
+        x-testName: "/document-templates/"
+        x-testDescription: 'TODO: Add Description'
+      x-operation-settings:
+        CollectParameters: false
+        AllowDynamicQueryParameters: false
+        AllowDynamicFormParameters: false
+        IsMultiContentStreaming: false
+  "/document-templates/query":
+    post:
+      description: 'TODO: Add Description'
+      summary: query /api/document-templates
+      tags:
+      - Misc
+      operationId: query /api/document-templates
+      produces:
+      - application/json
+      parameters:
+      - name: Body
+        in: body
+        required: true
+        description: ''
+        schema:
+          "$ref": "#/definitions/Query ~1api~1documentTemplatesrequest"
+      - name: Content-Type
+        in: header
+        required: true
+        type: string
+        description: ''
+      responses:
+        '200':
+          description: ''
+      security: []
+      x-unitTests: []
+      x-operation-settings:
+        CollectParameters: false
+        AllowDynamicQueryParameters: false
+        AllowDynamicFormParameters: false
+        IsMultiContentStreaming: false
+definitions:
+  "/documentTemplates/request":
+    title: "/document-templates/Request"
+    type: object
+    properties:
+      description:
+        description: ''
+        type: string
+      name:
+        description: ''
         type: string
       fields:
+        description: ''
+        type: array
+        items:
+          "$ref": "#/definitions/Field"
+    required:
+    - description
+    - name
+    - fields
+  Field:
+    title: Field
+    type: object
+    properties:
+      name:
+        description: ''
         type: string
+      description:
+        description: ''
+        type: string
+      tooltip:
+        description: ''
+        type: string
+      fieldStyle:
+        description: ''
+        type: integer
+        format: int32
+      primitiveType:
+        description: ''
+        type: integer
+        format: int32
+      requiresValidation:
+        description: ''
+        type: boolean
+      validators:
+        description: ''
+        type: array
+        items:
+          "$ref": "#/definitions/Validator"
+      value:
+        description: ''
+        type: string
+    required:
+    - name
+    - description
+    - tooltip
+    - fieldStyle
+    - primitiveType
+    - requiresValidation
+    - validators
+    - value
+  Validator:
+    title: Validator
+    type: object
+    properties:
+      validationType:
+        description: ''
+        type: integer
+        format: int32
+      min:
+        description: ''
+        type: integer
+        format: int32
+      max:
+        description: ''
+        type: integer
+        format: int32
+    required:
+    - validationType
+    - min
+    - max
+  "/documentTemplates/58f321afb7bf853a28eac174request":
+    title: "/document-templates/58f321afb7bf853a28eac174Request"
+    type: object
+    properties:
+      _id:
+        description: ''
+        type: string
+      __v:
+        description: ''
+        type: integer
+        format: int32
+      createdAt:
+        description: ''
+        type: string
+      description:
+        description: ''
+        type: string
+      name:
+        description: ''
+        type: string
+    required:
+    - _id
+    - __v
+    - createdAt
+    - description
+    - name
+  Query /api/documentTemplatesrequest:
+    title: query /api/document-templatesRequest
+    type: object
+    properties:
+      "$or":
+        description: ''
+        type: array
+        items:
+          "$ref": "#/definitions/Or"
+    required:
+    - "$or"
+  Or:
+    title: Or
+    type: object
+    properties:
+      fields.fieldStyle:
+        description: ''
+        "$ref": "#/definitions/FieldsFieldStyle"
+      fields.value:
+        description: ''
+        type: string
+      fields.updatedAt:
+        description: ''
+        type: string
+    required:
+    - fields.fieldStyle
+  FieldsFieldStyle:
+    title: FieldsFieldStyle
+    type: object
+    properties:
+      "$lt":
+        description: ''
+        type: integer
+        format: int32
+    required:
+    - "$lt"
+

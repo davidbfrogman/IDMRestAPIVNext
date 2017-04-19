@@ -9,7 +9,6 @@ export interface IField extends Document {
     tooltip: string;
     fieldStyle: FieldStyle;
     primitiveType: PrimitiveType;
-    requiresValidation: boolean;
     validators: Array<IValidator>;
     value: string;
 }
@@ -20,21 +19,16 @@ export const FieldSchema = new Schema({
     tooltip: { type: String },
     fieldStyle: { type: Number, enum: [EnumHelper.GetValuesFromEnum(FieldStyle)] },
     primitiveType: { type: Number, enum: [EnumHelper.GetValuesFromEnum(PrimitiveType)] },
-    requiresValidation: {type: Boolean, required: true},
     validators: [ValidatorSchema],
     value: {type: String}
 },{timestamps:true});
 
 //If you do any pre save methods, and you use fat arrow syntax 'this' doesn't refer to the document.
 FieldSchema.pre('save',function(next){
-    //If there's any validators, this field requires validation.
-    this.requiresValidation = this.validators && this.validators.length > 0
     next();
 });
 //If you do any pre save methods, and you use fat arrow syntax 'this' doesn't refer to the document.
 FieldSchema.pre('update',function(next){
-    //If there's any validators, this field requires validation.
-    this.requiresValidation = this.validators && this.validators.length > 0
     next();
 });
 
