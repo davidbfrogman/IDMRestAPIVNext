@@ -14,7 +14,7 @@ export interface IRole extends Document {
 export const RoleSchema = new Schema({
     name: {type: String},
     description: {type: String},
-    permissions: [PermissionSchema]
+    permissions: [{type: Schema.Types.ObjectId, ref: 'Permission'}]
 },{timestamps:true});
 
 //If you do any pre save methods, and you use fat arrow syntax 'this' doesn't refer to the document.

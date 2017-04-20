@@ -13,10 +13,15 @@ export interface IUser extends Document {
 }
 
 export const UserSchema = new Schema({
-    username: {type: String, unique:true},
+    username: {
+        type: String, 
+        unique:true,
+        trim:true,
+        required:true
+    },
     passwordHash: {type: String},
     email: {type:String, unique:true},
-    roles: [RoleSchema]
+    roles: [{ type : Schema.Types.ObjectId, ref: 'Role' }]
 },{timestamps:true});
 
 //If you do any pre save methods, and you use fat arrow syntax 'this' doesn't refer to the document.
