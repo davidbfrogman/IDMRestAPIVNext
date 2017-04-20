@@ -19,12 +19,12 @@ export abstract class BaseController<ModelType extends Document>{
   public list(request: Request, response: Response, next: NextFunction): Promise<any> {
     this.searchCriteria = new SearchCriteria(request, next);
 
-    var query = this.mongooseSchemaInstance
-      .find(this.searchCriteria.criteria)
+    let query = this.mongooseSchemaInstance.find()
       .skip(this.searchCriteria.skip)
       .limit(this.searchCriteria.limit)
-      .populate(this.defaultPopulationArgument)
       .sort(this.searchCriteria.sort);
+
+    query = this.defaultPopulationArgument ? query.populate(this.defaultPopulationArgument) : query;
 
     return query.exec()
       .then((listedItems: ModelType[]) => {
@@ -37,15 +37,17 @@ export abstract class BaseController<ModelType extends Document>{
   }
 
   public single(request: Request, response: Response, next: NextFunction): Promise<any> {
-    return this.mongooseSchemaInstance
+    let query = this.mongooseSchemaInstance
       .findById(this.getId(request))
-      .populate(this.defaultPopulationArgument)
-      .then((item) => {
 
-        response.json(item);
+    query = this.defaultPopulationArgument ? query.populate(this.defaultPopulationArgument) : query;
 
-        log.info(`Executed Single Operation: ${this.mongooseSchemaInstance.collection.name}, item._id: ${item._id}`);
-      })
+    return query.then((item) => {
+
+      response.json(item);
+
+      log.info(`Executed Single Operation: ${this.mongooseSchemaInstance.collection.name}, item._id: ${item._id}`);
+    })
       .catch((error) => { next(error); });
   }
 
@@ -84,10 +86,9 @@ export abstract class BaseController<ModelType extends Document>{
   }
 
   public update(request: Request, response: Response, next: NextFunction): Promise<any> {
-    
+
     return this.mongooseSchemaInstance
       .findByIdAndUpdate(this.getId(request), new this.mongooseSchemaInstance(request.body), { new: true })
-      .populate(this.defaultPopulationArgument)
       .then((createdItem: ModelType) => {
 
         response.json(createdItem);
@@ -98,10 +99,12 @@ export abstract class BaseController<ModelType extends Document>{
   }
 
   public destroy(request: Request, response: Response, next: NextFunction): Promise<any> {
-    return this.mongooseSchemaInstance
-      .findByIdAndRemove(this.getId(request))
-      .populate(this.defaultPopulationArgument)
-      .then((deletedItem) => {
+    let query = this.mongooseSchemaInstance
+      .findByIdAndRemove(this.getId(request));
+
+    query = this.defaultPopulationArgument ? query.populate(this.defaultPopulationArgument) : query;
+
+    return query.then((deletedItem) => {
 
         response.json({
           ItemRemovedId: this.getId(request),
@@ -114,9 +117,11 @@ export abstract class BaseController<ModelType extends Document>{
   }
 
   public query(request: Request, response: Response, next: NextFunction): Promise<any> {
-    return this.mongooseSchemaInstance.find(request.body)
-      .populate(this.defaultPopulationArgument)
-      .then((items: ModelType[]) => {
+    let query = this.mongooseSchemaInstance.find(request.body)
+    
+     query = this.defaultPopulationArgument ? query.populate(this.defaultPopulationArgument) : query;
+
+     return query.then((items: ModelType[]) => {
 
         response.json({ items });
 

@@ -1,20 +1,20 @@
 import { Router } from 'express';
-import { UserMI } from '../models/user';
-import { UserController } from '../controllers/user.controller';
+import { RoleMI } from '../models/role';
+import { RoleController } from '../controllers/role.controller';
 import { Request, Response, RequestHandler, } from 'express';
 import { RequestHandlerParams, NextFunction } from '@types/express-serve-static-core';
 import { IncomingMessage } from 'http';
 import { BaseRouter } from "./base/base.router";
 
-export class UserRouter extends BaseRouter<UserController> {
+export class RoleRouter extends BaseRouter<RoleController> {
     public router: Router = Router();
-    public UserController = new UserController();
+    public RoleController = new RoleController();
     public resource: string;
 
     public constructor(){
         super();
-        this.resource = '/users';
-        super.controller = this.UserController;
+        this.resource = '/roles';
+        super.controller = this.RoleController;
     }
 
     public getRouter(): Router {

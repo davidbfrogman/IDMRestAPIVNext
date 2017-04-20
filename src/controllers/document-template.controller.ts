@@ -5,8 +5,9 @@ import { Schema, Model, Document } from 'mongoose';
 import { BaseController } from "./base/base.controller";
 
 export class DocumentTemplateController extends BaseController<IDocumentTemplate> {
+  public defaultPopulationArgument = null;
 
-  constructor(){
+  constructor() {
     super();
     super.mongooseSchemaInstance = DocumentTemplateMI;
   }

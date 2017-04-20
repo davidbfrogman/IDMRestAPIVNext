@@ -9,6 +9,7 @@ const jwt = require('jsonwebtoken');
 
 export class AuthenticationController extends BaseController<IUser> {
     tokenExpiration: String = '1d';
+  public defaultPopulationArgument = null;
 
     constructor() {
         super();

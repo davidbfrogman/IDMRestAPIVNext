@@ -1,20 +1,20 @@
 import { Router } from 'express';
-import { UserMI } from '../models/user';
-import { UserController } from '../controllers/user.controller';
+import { PermissionMI } from '../models/permission';
+import { PermissionController } from '../controllers/permission.controller';
 import { Request, Response, RequestHandler, } from 'express';
 import { RequestHandlerParams, NextFunction } from '@types/express-serve-static-core';
 import { IncomingMessage } from 'http';
 import { BaseRouter } from "./base/base.router";
 
-export class UserRouter extends BaseRouter<UserController> {
+export class PermissionRouter extends BaseRouter<PermissionController> {
     public router: Router = Router();
-    public UserController = new UserController();
+    public PermissionController = new PermissionController();
     public resource: string;
 
     public constructor(){
         super();
-        this.resource = '/users';
-        super.controller = this.UserController;
+        this.resource = '/permissions';
+        super.controller = this.PermissionController;
     }
 
     public getRouter(): Router {

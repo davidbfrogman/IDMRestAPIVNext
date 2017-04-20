@@ -6,9 +6,9 @@ import { BaseController } from "./base/base.controller";
 export class UserController extends BaseController<IUser> {
   public defaultPopulationArgument = 
     {
-    path: 'Roles',
+    path: 'roles',
     // Permissions for the roles
-    populate: { path: 'Permissions' }
+    populate: { path: 'permissions' }
   }
 
   constructor(){

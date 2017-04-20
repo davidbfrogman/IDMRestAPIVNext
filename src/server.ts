@@ -18,6 +18,8 @@ import { UserRouter } from './routes/user.router';
 import { config } from './config/config';
 import { AuthenticationRouter } from './routes/authentication.router';
 import { Router } from 'express';
+import { RoleRouter } from "./routes/role.router";
+import { PermissionRouter } from "./routes/permission.router";
 
 log.remove(log.transports.Console);
 log.add(log.transports.Console, { colorize: true });
@@ -51,11 +53,13 @@ app.use(morgan('dev')); //Using morgan middleware for logging all requests.
 
 // Routers =============================================================
 log.info('Initializing Routers');
-app.use(new AuthenticationRouter().authenticationRequestValidation);
+//app.use(new AuthenticationRouter().authenticationRequestValidation);
 
 app.use('/api', new AuthenticationRouter().getRouter());
 app.use('/api', new DocumentTemplateRouter().getRouter());
-app.use('/api', new UserRouter().getRouter());
+app.use('/api/admin', new UserRouter().getRouter());
+app.use('/api/admin', new RoleRouter().getRouter());
+app.use('/api/admin', new PermissionRouter().getRouter());
 app.use('/api-docs', express.static(__dirname + '/swagger/swagger-ui'));
 app.use('/swagger-definition', express.static(__dirname + '/swagger/'));
 
