@@ -7,6 +7,7 @@ import log = require('winston');
 export abstract class BaseController<ModelType extends Document>{
   mongooseSchemaInstance: Model<ModelType>;
   searchCriteria: SearchCriteria;
+  abstract defaultPopulationArgument: Object;
 
   public constructor() {
   }
@@ -22,6 +23,7 @@ export abstract class BaseController<ModelType extends Document>{
       .find(this.searchCriteria.criteria)
       .skip(this.searchCriteria.skip)
       .limit(this.searchCriteria.limit)
+      .populate(this.defaultPopulationArgument)
       .sort(this.searchCriteria.sort);
 
     return query.exec()
@@ -37,6 +39,7 @@ export abstract class BaseController<ModelType extends Document>{
   public single(request: Request, response: Response, next: NextFunction): Promise<any> {
     return this.mongooseSchemaInstance
       .findById(this.getId(request))
+      .populate(this.defaultPopulationArgument)
       .then((item) => {
 
         response.json(item);
@@ -84,6 +87,7 @@ export abstract class BaseController<ModelType extends Document>{
     
     return this.mongooseSchemaInstance
       .findByIdAndUpdate(this.getId(request), new this.mongooseSchemaInstance(request.body), { new: true })
+      .populate(this.defaultPopulationArgument)
       .then((createdItem: ModelType) => {
 
         response.json(createdItem);
@@ -96,6 +100,7 @@ export abstract class BaseController<ModelType extends Document>{
   public destroy(request: Request, response: Response, next: NextFunction): Promise<any> {
     return this.mongooseSchemaInstance
       .findByIdAndRemove(this.getId(request))
+      .populate(this.defaultPopulationArgument)
       .then((deletedItem) => {
 
         response.json({
@@ -110,6 +115,7 @@ export abstract class BaseController<ModelType extends Document>{
 
   public query(request: Request, response: Response, next: NextFunction): Promise<any> {
     return this.mongooseSchemaInstance.find(request.body)
+      .populate(this.defaultPopulationArgument)
       .then((items: ModelType[]) => {
 
         response.json({ items });
