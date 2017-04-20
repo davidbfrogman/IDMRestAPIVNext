@@ -17,6 +17,7 @@
   },
   "dependencies": {
     "@reactivex/rxjs": "^5.3.0",
+    "bcrypt": "^1.0.2",
     "bluebird": "^3.5.0",
     "body-parser": "^1.15.2",
     "compression": "^1.6.2",

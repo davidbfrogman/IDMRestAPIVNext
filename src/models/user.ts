@@ -19,7 +19,7 @@ export const UserSchema = new Schema({
         trim:true,
         required:true
     },
-    passwordHash: {type: String},
+    passwordHash: {type: String, required: true},
     email: {type:String, unique:true},
     roles: [{ type : Schema.Types.ObjectId, ref: 'Role' }]
 },{timestamps:true});

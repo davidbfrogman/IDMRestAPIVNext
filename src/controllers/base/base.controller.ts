@@ -4,6 +4,9 @@ import { Schema, Model, Document } from 'mongoose';
 import { SearchCriteria } from "../../models/search-criteria";
 import log = require('winston');
 
+//Model<IUser> & IUser
+//OLD WAY: BaseController<ModelType extends Document>
+//export abstract class BaseController<T extends Document,XType extends Document & Model<T>>{
 export abstract class BaseController<ModelType extends Document>{
   mongooseSchemaInstance: Model<ModelType>;
   searchCriteria: SearchCriteria;
@@ -73,9 +76,15 @@ export abstract class BaseController<ModelType extends Document>{
       .catch((error) => { next(error); });
   }
 
-  public create(request: Request, response: Response, next: NextFunction): Promise<any> {
-    const documentTemplate = new this.mongooseSchemaInstance(request.body);
-    return documentTemplate.save()
+  public create(request: Request, response: Response, next: NextFunction, modelInstance: ModelType): Promise<any> {
+    let item: ModelType;
+    if(modelInstance){
+        item = modelInstance;
+    }
+    else{
+        item = new this.mongooseSchemaInstance(request.body);
+    }
+    return item.save()
       .then((item: ModelType) => {
 
         response.json({ item });

@@ -9,7 +9,7 @@ import { BaseRouter } from './base/base.router';
 export class AuthenticationRouter extends BaseRouter<AuthenticationController> {
     public router: Router = Router();
     public authenticationController = new AuthenticationController();
-    public resource: string = '/authenticate';
+    public resource: string = '';
 
     public constructor() {
         super();
@@ -24,6 +24,6 @@ export class AuthenticationRouter extends BaseRouter<AuthenticationController> {
     }
 
     public authenticationRequestValidation(request: Request, response: Response, next: NextFunction): Response{
-        return this.authenticationController.authenticationRequestValidation(request,response,next);
+        return new AuthenticationController().authenticationRequestValidation(request,response,next);
     }
 }

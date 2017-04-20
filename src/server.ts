@@ -53,9 +53,10 @@ app.use(morgan('dev')); //Using morgan middleware for logging all requests.
 
 // Routers =============================================================
 log.info('Initializing Routers');
-//app.use(new AuthenticationRouter().authenticationRequestValidation);
+app.use('/authenticate', new AuthenticationRouter().getRouter());
+//Commenting out authentication for development
+//app.use('/api*', new AuthenticationRouter().authenticationRequestValidation);
 
-app.use('/api', new AuthenticationRouter().getRouter());
 app.use('/api', new DocumentTemplateRouter().getRouter());
 app.use('/api/admin', new UserRouter().getRouter());
 app.use('/api/admin', new RoleRouter().getRouter());
