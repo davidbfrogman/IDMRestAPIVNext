@@ -1,6 +1,6 @@
 import { Router, Request, Response, RequestParamHandler, NextFunction, RequestHandler } from 'express';
 import mongoose = require('mongoose');
-import { Schema, Model, Document } from 'mongoose';
+import { Schema, Model, Document, DocumentQuery } from 'mongoose';
 import { SearchCriteria } from "../../models/search-criteria";
 import log = require('winston');
 
@@ -19,7 +19,7 @@ export abstract class BaseController<IModelMongooseComposite extends Document>{
     return request && request.params ? request.params['id'] : null;
   }
 
-  public list(request: Request, response: Response, next: NextFunction): Promise<any> {
+  public list(request: Request, response: Response, next: NextFunction): Promise<IModelMongooseComposite[]> {
     this.searchCriteria = new SearchCriteria(request, next);
 
     let query = this.mongooseModelInstance.find()
@@ -35,21 +35,21 @@ export abstract class BaseController<IModelMongooseComposite extends Document>{
         response.json(listedItems);
 
         log.info(`Executed List Operation: ${this.mongooseModelInstance.collection.name}, Count: ${listedItems.length}`);
+        return listedItems;
       })
       .catch((error) => { next(error); });
   }
 
-  public single(request: Request, response: Response, next: NextFunction): Promise<any> {
+  public single(request: Request, response: Response, next: NextFunction): Promise<IModelMongooseComposite> {
     let query = this.mongooseModelInstance
       .findById(this.getId(request))
 
     query = this.defaultPopulationArgument ? query.populate(this.defaultPopulationArgument) : query;
 
     return query.then((item) => {
-
       response.json(item);
-
       log.info(`Executed Single Operation: ${this.mongooseModelInstance.collection.name}, item._id: ${item._id}`);
+      return item;
     })
       .catch((error) => { next(error); });
   }
@@ -58,7 +58,7 @@ export abstract class BaseController<IModelMongooseComposite extends Document>{
     response.json(new this.mongooseModelInstance());
   }
 
-  public count(request: Request, response: Response, next: NextFunction): Promise<any> {
+  public count(request: Request, response: Response, next: NextFunction): Promise<void> {
     this.searchCriteria = new SearchCriteria(request, next);
     return this.mongooseModelInstance
       .find(this.searchCriteria.criteria)
@@ -76,18 +76,19 @@ export abstract class BaseController<IModelMongooseComposite extends Document>{
       .catch((error) => { next(error); });
   }
 
-  public create(request: Request, response: Response, next: NextFunction): Promise<any> {
+  public create(request: Request, response: Response, next: NextFunction): Promise<IModelMongooseComposite> {
     return new this.mongooseModelInstance(request.body).save()
       .then((item: IModelMongooseComposite) => {
 
         response.json({ item });
 
         log.info(`Created New: ${this.mongooseModelInstance.collection.name}, ID: ${item._id}`);
+        return item;
       })
       .catch((error) => { next(error); });
   }
 
-  public update(request: Request, response: Response, next: NextFunction): Promise<any> {
+  public update(request: Request, response: Response, next: NextFunction): Promise<IModelMongooseComposite> {
 
     return this.mongooseModelInstance
       .findByIdAndUpdate(this.getId(request), new this.mongooseModelInstance(request.body), { new: true })
@@ -96,11 +97,12 @@ export abstract class BaseController<IModelMongooseComposite extends Document>{
         response.json(createdItem);
 
         log.info(`Updated a: ${this.mongooseModelInstance.collection.name}, ID: ${createdItem._id}`);
+        return createdItem;
       })
       .catch((error) => { next(error); });
   }
 
-  public destroy(request: Request, response: Response, next: NextFunction): Promise<any> {
+  public destroy(request: Request, response: Response, next: NextFunction): Promise<IModelMongooseComposite> {
     let query = this.mongooseModelInstance
       .findByIdAndRemove(this.getId(request));
 
@@ -114,11 +116,12 @@ export abstract class BaseController<IModelMongooseComposite extends Document>{
         });
 
         log.info(`Removed a: ${this.mongooseModelInstance.collection.name}, ID: ${this.getId(request)}`);
+        return deletedItem;
       })
       .catch((error) => { next(error); });
   }
 
-  public query(request: Request, response: Response, next: NextFunction): Promise<any> {
+  public query(request: Request, response: Response, next: NextFunction): Promise<IModelMongooseComposite[]> {
     let query = this.mongooseModelInstance.find(request.body)
     
      query = this.defaultPopulationArgument ? query.populate(this.defaultPopulationArgument) : query;
@@ -128,6 +131,7 @@ export abstract class BaseController<IModelMongooseComposite extends Document>{
         response.json({ items });
 
         log.info(`Queried for: ${this.mongooseModelInstance.collection.name}, Found: ${items.length}`);
+        return items;
       })
       .catch((error) => { next(error); });
   }

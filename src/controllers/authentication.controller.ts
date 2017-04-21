@@ -8,6 +8,7 @@ import { config } from '../config/config';
 const jwt = require('jsonwebtoken');
 
 export class AuthenticationController extends BaseController<IUserMongooseComposite> {
+
     tokenExpiration: String = '1d';
   public defaultPopulationArgument = null;
 

@@ -19,12 +19,20 @@ export class UserController extends BaseController<IUserMongooseComposite> {
     super.mongooseModelInstance = UserMongooseComposite;
   }
 
-  public create(request: Request, response: Response, next: NextFunction): Promise<any> {
+  // public single(request: Request, response: Response, next: NextFunction): Promise<IUserMongooseComposite> {
+  //     return super.single(request,response,next).then((user)=>{
+  //       user.passwordHash = '';
+  //       response.json(user);
+  //       return user
+  //     });
+  // }
+
+  public create(request: Request, response: Response, next: NextFunction): Promise<IUserMongooseComposite> {
     let user:IUser = <IUser>request.body;
     return bcrypt.hash(user.passwordHash, this.saltRounds, (err, hash)=> {
       user.passwordHash = hash;
       request.body = user;  //If we push this back onto the request, then the rest of our architecture will just work. 
-      super.create(request,response,next);
+      return super.create(request,response,next);
     });
   }
 }
