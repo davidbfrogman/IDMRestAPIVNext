@@ -2,7 +2,6 @@ import { mongoose } from '../config/database';
 import { Schema, Model, Document } from 'mongoose';
 import { IField, FieldSchema } from './field'
 
-
 export interface IDocumentTemplate extends Document {
     name: string
     description?: string;
@@ -34,6 +33,6 @@ DocumentTemplateSchema.pre('update',function(next){
     next();
 });
 
-export type DocumentTemplateModel = Model<IDocumentTemplate> & IDocumentTemplate;
+export interface IDocumentTemplateMongooseComposite extends IDocumentTemplate, Document {};
 
-export const DocumentTemplateMI: DocumentTemplateModel = <DocumentTemplateModel>mongoose.model<IDocumentTemplate>('DocumentTemplate', DocumentTemplateSchema);
+export const DocumentTemplateMongooseComposite:Model<IDocumentTemplateMongooseComposite> = mongoose.model<IDocumentTemplateMongooseComposite>('DocumentTemplate', DocumentTemplateSchema);

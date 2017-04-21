@@ -18,10 +18,10 @@ export const PermissionSchema = new Schema({
 
 //If you do any pre save methods, and you use fat arrow syntax 'this' doesn't refer to the document.
 PermissionSchema.pre('save',function(next){
-    //If there's any validators, this field requires validation.
+    //If there's any Permissions, this field requires validation.
     next();
 });
 
-export type PermissionModel = Model<IPermission> & IPermission;
+export interface IPermissionMongooseComposite extends IPermission, Document {};
 
-export const PermissionMI: PermissionModel = <PermissionModel>mongoose.model<IPermission>('Permission', PermissionSchema);
+export const PermissionMongooseComposite:Model<IPermissionMongooseComposite> = mongoose.model<IPermissionMongooseComposite>('Permission', PermissionSchema);

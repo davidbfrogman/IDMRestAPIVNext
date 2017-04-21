@@ -12,7 +12,6 @@ import log = require('winston');
 
 // Router Imports ======================================================
 import { DocumentTemplateRouter } from './routes/document-template.router';
-import { APIDocsRouter } from './routes/swagger';
 import { ApiErrorHandler } from './api-error-handler';
 import { UserRouter } from './routes/user.router';
 import { config } from './config/config';

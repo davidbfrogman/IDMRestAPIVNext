@@ -1,9 +1,5 @@
 import { Router } from 'express';
-import { RoleMI } from '../models/role';
 import { RoleController } from '../controllers/role.controller';
-import { Request, Response, RequestHandler, } from 'express';
-import { RequestHandlerParams, NextFunction } from '@types/express-serve-static-core';
-import { IncomingMessage } from 'http';
 import { BaseRouter } from "./base/base.router";
 
 export class RoleRouter extends BaseRouter<RoleController> {

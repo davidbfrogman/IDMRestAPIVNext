@@ -1,5 +1,5 @@
 import { mongoose } from '../config/database';
-import { Schema, Model, Document } from 'mongoose';
+import { Schema, Model, Document, model } from 'mongoose';
 import { IField, FieldSchema } from './field'
 import { IRole, RoleSchema } from "./role";
 
@@ -12,7 +12,7 @@ export interface IUser extends Document {
     modifiedAt?: Date; //Automatically created by mongoose.
 }
 
-export const UserSchema = new Schema({
+const UserSchema = new Schema({
     username: {
         type: String, 
         unique:true,
@@ -30,6 +30,6 @@ UserSchema.pre('save',function(next){
     next();
 });
 
-export type UserModel = Model<IUser> & IUser;
+export interface IUserMongooseComposite extends IUser, Document {};
 
-export const UserMI: UserModel = <UserModel>mongoose.model<IUser>('User', UserSchema);
+export const UserMongooseComposite:Model<IUserMongooseComposite> = mongoose.model<IUserMongooseComposite>('User', UserSchema);

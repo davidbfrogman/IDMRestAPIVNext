@@ -7,8 +7,8 @@ import log = require('winston');
 //Model<IUser> & IUser
 //OLD WAY: BaseController<ModelType extends Document>
 //export abstract class BaseController<T extends Document,XType extends Document & Model<T>>{
-export abstract class BaseController<ModelType extends Document>{
-  mongooseSchemaInstance: Model<ModelType>;
+export abstract class BaseController<IModelMongooseComposite extends Document>{
+  public mongooseModelInstance: Model<IModelMongooseComposite>;
   searchCriteria: SearchCriteria;
   abstract defaultPopulationArgument: Object;
 
@@ -22,7 +22,7 @@ export abstract class BaseController<ModelType extends Document>{
   public list(request: Request, response: Response, next: NextFunction): Promise<any> {
     this.searchCriteria = new SearchCriteria(request, next);
 
-    let query = this.mongooseSchemaInstance.find()
+    let query = this.mongooseModelInstance.find()
       .skip(this.searchCriteria.skip)
       .limit(this.searchCriteria.limit)
       .sort(this.searchCriteria.sort);
@@ -30,17 +30,17 @@ export abstract class BaseController<ModelType extends Document>{
     query = this.defaultPopulationArgument ? query.populate(this.defaultPopulationArgument) : query;
 
     return query.exec()
-      .then((listedItems: ModelType[]) => {
+      .then((listedItems: IModelMongooseComposite[]) => {
 
         response.json(listedItems);
 
-        log.info(`Executed List Operation: ${this.mongooseSchemaInstance.collection.name}, Count: ${listedItems.length}`);
+        log.info(`Executed List Operation: ${this.mongooseModelInstance.collection.name}, Count: ${listedItems.length}`);
       })
       .catch((error) => { next(error); });
   }
 
   public single(request: Request, response: Response, next: NextFunction): Promise<any> {
-    let query = this.mongooseSchemaInstance
+    let query = this.mongooseModelInstance
       .findById(this.getId(request))
 
     query = this.defaultPopulationArgument ? query.populate(this.defaultPopulationArgument) : query;
@@ -49,66 +49,59 @@ export abstract class BaseController<ModelType extends Document>{
 
       response.json(item);
 
-      log.info(`Executed Single Operation: ${this.mongooseSchemaInstance.collection.name}, item._id: ${item._id}`);
+      log.info(`Executed Single Operation: ${this.mongooseModelInstance.collection.name}, item._id: ${item._id}`);
     })
       .catch((error) => { next(error); });
   }
 
   public blank(request: Request, response: Response, next: NextFunction): void {
-    response.json(new this.mongooseSchemaInstance());
+    response.json(new this.mongooseModelInstance());
   }
 
   public count(request: Request, response: Response, next: NextFunction): Promise<any> {
     this.searchCriteria = new SearchCriteria(request, next);
-    return this.mongooseSchemaInstance
+    return this.mongooseModelInstance
       .find(this.searchCriteria.criteria)
       .count()
       .then((count: Number) => {
 
         response.json({
-          CollectionName: this.mongooseSchemaInstance.collection.name,
+          CollectionName: this.mongooseModelInstance.collection.name,
           CollectionCount: count,
           SearchCriteria: this.searchCriteria.criteria
         });
 
-        log.info(`Executed Count Operation: ${this.mongooseSchemaInstance.collection.name}, Count: ${count}`);
+        log.info(`Executed Count Operation: ${this.mongooseModelInstance.collection.name}, Count: ${count}`);
       })
       .catch((error) => { next(error); });
   }
 
-  public create(request: Request, response: Response, next: NextFunction, modelInstance: ModelType): Promise<any> {
-    let item: ModelType;
-    if(modelInstance){
-        item = modelInstance;
-    }
-    else{
-        item = new this.mongooseSchemaInstance(request.body);
-    }
-    return item.save()
-      .then((item: ModelType) => {
+  public create(request: Request, response: Response, next: NextFunction): Promise<any> {
+    return new this.mongooseModelInstance(request.body).save()
+      .then((item: IModelMongooseComposite) => {
 
         response.json({ item });
 
-        log.info(`Created New: ${this.mongooseSchemaInstance.collection.name}, ID: ${item._id}`);
+        log.info(`Created New: ${this.mongooseModelInstance.collection.name}, ID: ${item._id}`);
       })
       .catch((error) => { next(error); });
   }
 
   public update(request: Request, response: Response, next: NextFunction): Promise<any> {
 
-    return this.mongooseSchemaInstance
-      .findByIdAndUpdate(this.getId(request), new this.mongooseSchemaInstance(request.body), { new: true })
-      .then((createdItem: ModelType) => {
+    return this.mongooseModelInstance
+      .findByIdAndUpdate(this.getId(request), new this.mongooseModelInstance(request.body), { new: true })
+      .then((createdItem: IModelMongooseComposite) => {
 
         response.json(createdItem);
 
-        log.info(`Updated a: ${this.mongooseSchemaInstance.collection.name}, ID: ${createdItem._id}`);
+        log.info(`Updated a: ${this.mongooseModelInstance.collection.name}, ID: ${createdItem._id}`);
       })
       .catch((error) => { next(error); });
   }
 
   public destroy(request: Request, response: Response, next: NextFunction): Promise<any> {
-    let query = this.mongooseSchemaInstance
+    let query = this.mongooseModelInstance
       .findByIdAndRemove(this.getId(request));
 
     query = this.defaultPopulationArgument ? query.populate(this.defaultPopulationArgument) : query;
@@ -120,21 +113,21 @@ export abstract class BaseController<ModelType extends Document>{
           ItemRemoved: deletedItem
         });
 
-        log.info(`Removed a: ${this.mongooseSchemaInstance.collection.name}, ID: ${this.getId(request)}`);
+        log.info(`Removed a: ${this.mongooseModelInstance.collection.name}, ID: ${this.getId(request)}`);
       })
       .catch((error) => { next(error); });
   }
 
   public query(request: Request, response: Response, next: NextFunction): Promise<any> {
-    let query = this.mongooseSchemaInstance.find(request.body)
+    let query = this.mongooseModelInstance.find(request.body)
     
      query = this.defaultPopulationArgument ? query.populate(this.defaultPopulationArgument) : query;
 
-     return query.then((items: ModelType[]) => {
+     return query.then((items: IModelMongooseComposite[]) => {
 
         response.json({ items });
 
-        log.info(`Queried for: ${this.mongooseSchemaInstance.collection.name}, Found: ${items.length}`);
+        log.info(`Queried for: ${this.mongooseModelInstance.collection.name}, Found: ${items.length}`);
       })
       .catch((error) => { next(error); });
   }

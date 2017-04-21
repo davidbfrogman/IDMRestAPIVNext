@@ -25,6 +25,6 @@ ValidatorSchema.pre('save',function(next){
     next();
 });
 
-export type ValidatorModel = Model<IValidator> & IValidator;
+export interface IValidatorMongooseComposite extends IValidator, Document {};
 
-export const DocumentTemplateMI: ValidatorModel = <ValidatorModel>mongoose.model<IValidator>('Validator', ValidatorSchema);
+export const ValidatorMongooseComposite:Model<IValidatorMongooseComposite> = mongoose.model<IValidatorMongooseComposite>('Validator', ValidatorSchema);

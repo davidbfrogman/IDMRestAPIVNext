@@ -1,4 +1,4 @@
-import { UserMI, IUser } from '../models/user';
+import { IUserMongooseComposite, UserMongooseComposite } from '../models/user';
 import { Router, Request, Response, RequestParamHandler, NextFunction, RequestHandler, Application } from 'express';
 import mongoose = require('mongoose');
 import { Schema, Model, Document } from 'mongoose';
@@ -7,17 +7,17 @@ import { config } from '../config/config';
 
 const jwt = require('jsonwebtoken');
 
-export class AuthenticationController extends BaseController<IUser> {
+export class AuthenticationController extends BaseController<IUserMongooseComposite> {
     tokenExpiration: String = '1d';
   public defaultPopulationArgument = null;
 
     constructor() {
         super();
-        super.mongooseSchemaInstance = UserMI;
+        super.mongooseModelInstance = UserMongooseComposite;
     }
 
     public authenticate(request: Request, response: Response, next: NextFunction): Promise<any> {
-        return this.mongooseSchemaInstance
+        return this.mongooseModelInstance
             .findOne({
                 username: request.body.username
             }).then((user) => {

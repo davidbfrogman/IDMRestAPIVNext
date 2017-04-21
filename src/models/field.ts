@@ -32,6 +32,6 @@ FieldSchema.pre('update',function(next){
     next();
 });
 
-export type FieldModel = Model<IField> & IField;
+export interface IFieldMongooseComposite extends IField, Document {};
 
-export const FieldMI: FieldModel = <FieldModel>mongoose.model<IField>('Field', FieldSchema);
+export const FieldMongooseComposite:Model<IFieldMongooseComposite> = mongoose.model<IFieldMongooseComposite>('Field', FieldSchema);

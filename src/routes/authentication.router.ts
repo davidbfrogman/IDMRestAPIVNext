@@ -1,5 +1,4 @@
 import { Router } from 'express';
-import { UserMI } from '../models/user';
 import { AuthenticationController } from '../controllers/authentication.controller';
 import { Request, Response, RequestHandler, } from 'express';
 import { RequestHandlerParams, NextFunction } from '@types/express-serve-static-core';
