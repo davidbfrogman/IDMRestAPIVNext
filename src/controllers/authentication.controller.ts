@@ -4,13 +4,14 @@ import mongoose = require('mongoose');
 import { Schema, Model, Document } from 'mongoose';
 import { BaseController } from './base/base.controller';
 import { config } from '../config/config';
+var bcrypt = require('bcrypt');
 
 const jwt = require('jsonwebtoken');
 
 export class AuthenticationController extends BaseController<IUserMongooseComposite> {
-
-    tokenExpiration: String = '1d';
-  public defaultPopulationArgument = null;
+    private saltRounds: Number = 10;
+    private tokenExpiration: String = '1d';
+    public defaultPopulationArgument = null;
 
     constructor() {
         super();
@@ -21,26 +22,31 @@ export class AuthenticationController extends BaseController<IUserMongooseCompos
         return this.mongooseModelInstance
             .findOne({
                 username: request.body.username
-            }).then((user) => {
-                //hash the password we recieved from the body
-                if (user.passwordHash !== request.body.passwordHash) {
-                    response.status(401).json({
-                        message: 'Authentication Failed',
-                        description: 'Password does not match'
-                    })
-                }
-                else {
-                    var token = jwt.sign(user._id, config.devConfig.jwtSecretToken, {
-                        expiresIn: this.tokenExpiration // expires in 1 day
-                    });
+            })
+            .select('+passwordHash')
+            .then((user) => {
+                bcrypt.hash(request.body.passwordHash, this.saltRounds, (err, hash) => {
+                    if (user.passwordHash !== hash) {
+                        response.status(401).json({
+                            message: 'Authentication Failed',
+                            description: 'Password does not match'
+                        })
+                    }
+                    else {
+                        var token = jwt.sign(user._id, config.devConfig.jwtSecretToken, {
+                            expiresIn: this.tokenExpiration // expires in 1 day
+                        });
 
-                    response.json({
-                        authenticated: true,
-                        message: 'Successfully created jwt authentication token.',
-                        expiresIn: this.tokenExpiration,
-                        token: token,
-                    })
-                }
+                        response.json({
+                            authenticated: true,
+                            message: 'Successfully created jwt authentication token.',
+                            expiresIn: this.tokenExpiration,
+                            token: token,
+                        })
+                    }
+                });
+                //hash the password we recieved from the body
+
 
             })
             .catch((error) => { next(error); });
