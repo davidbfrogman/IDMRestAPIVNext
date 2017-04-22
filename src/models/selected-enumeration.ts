@@ -11,8 +11,8 @@ export interface ISelectedEnumeration extends Document{
 
 export const SelectedEnumerationSchema = new Schema({
     selectedValue: {type: String},
-    fromEnumeration: [{ type : Schema.Types.ObjectId, ref: 'enterpriseEnumeration' }]
-},{timestamps:true});
+    fromEnumeration: { type : Schema.Types.ObjectId, ref: 'enterpriseEnumeration' }
+},{timestamps:false, _id: false});
 
 export interface ISelectedEnumerationComposite extends ISelectedEnumeration, Document {};
 

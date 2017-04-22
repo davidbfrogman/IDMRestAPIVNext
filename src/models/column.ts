@@ -22,7 +22,7 @@ export const ColumnSchema = new Schema({
     primitiveType: { type: Number, enum: [EnumHelper.GetValuesFromEnum(PrimitiveType)] },
     validators: [ValidatorSchema],
     values: {type: [String] }
-},{timestamps:false});
+},{timestamps:false, _id: false});
 
 
 export interface IColumnComposite extends IColumn, Document {};

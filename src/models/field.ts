@@ -20,18 +20,18 @@ export const FieldSchema = new Schema({
     fieldStyle: { type: Number, enum: [EnumHelper.GetValuesFromEnum(FieldStyle)] },
     primitiveType: { type: Number, enum: [EnumHelper.GetValuesFromEnum(PrimitiveType)] },
     validators: [ValidatorSchema],
-    value: {type: String}
-},{timestamps:true});
+    value: { type: String }
+}, { timestamps: false, _id: false });
 
 //If you do any pre save methods, and you use fat arrow syntax 'this' doesn't refer to the document.
-FieldSchema.pre('save',function(next){
+FieldSchema.pre('save', function (next) {
     next();
 });
 //If you do any pre save methods, and you use fat arrow syntax 'this' doesn't refer to the document.
-FieldSchema.pre('update',function(next){
+FieldSchema.pre('update', function (next) {
     next();
 });
 
-export interface IFieldComposite extends IField, Document {};
+export interface IFieldComposite extends IField, Document { };
 
-export const FieldComposite:Model<IFieldComposite> = mongoose.model<IFieldComposite>('field', FieldSchema);
+export const FieldComposite: Model<IFieldComposite> = mongoose.model<IFieldComposite>('field', FieldSchema);

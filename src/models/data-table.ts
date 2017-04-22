@@ -15,7 +15,7 @@ export const DataTableSchema = new Schema({
     name: { type: String },
     description: { type: String },
     columns:[ColumnSchema],
-},{timestamps:false});
+},{timestamps:false, _id: false});
 
 //If you do any pre save methods, and you use fat arrow syntax 'this' doesn't refer to the document.
 DataTableSchema.pre('save',function(next){

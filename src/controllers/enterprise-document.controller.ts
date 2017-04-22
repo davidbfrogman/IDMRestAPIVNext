@@ -1,12 +1,11 @@
 import { NextFunction, Request, RequestHandler, RequestParamHandler, Response, Router } from 'express';
 import { EnterpriseDocumentComposite, IEnterpriseDocument } from '../models/enterprise-document';
-import mongoose = require('mongoose');
 import { Document, Model, Schema } from 'mongoose';
 import { BaseController } from './base/base.controller';
 import { IField, FieldComposite } from "../models/field";
 import { FieldStyle, PrimitiveType, EnumHelper, ValidationType } from '../enumerations';
 import { EnterpriseEnumerationController } from "./enterprise-enumeration.controller";
-import { EnterpriseEnumerationComposite } from "../models/enterprise-enumeration";
+import { EnterpriseEnumerationComposite, IEnterpriseEnumeration } from "../models/enterprise-enumeration";
 import { DataTableComposite } from "../models/data-table";
 import { ValidatorComposite } from "../models/validator";
 import { SelectedEnumerationComposite } from "../models/selected-enumeration";
@@ -15,8 +14,7 @@ import { ColumnComposite } from "../models/column";
 export class EnterpriseDocumentController extends BaseController<IEnterpriseDocument> {
     public defaultPopulationArgument =
     {
-        path: 'selectedEnumerations',
-        populate: { path: 'fromEnumeration' }
+        path: 'selectedEnumerations.fromEnumeration'
     };
 
     constructor() {
@@ -63,7 +61,7 @@ export class EnterpriseDocumentController extends BaseController<IEnterpriseDocu
             bearNameColumn.description = "Every Bear needs a name";
             bearNameColumn.fieldStyle = FieldStyle.String;
             bearNameColumn.primitiveType = PrimitiveType.String;
-            bearNameColumn.values = ["Smokey", "Boo-Boo","Sleepy"];
+            bearNameColumn.values = ["Smokey", "Boo-Boo", "Sleepy"];
             bearNameColumn.validators.push(validator);
             bearDataTable.columns.push(bearNameColumn);
 
@@ -72,7 +70,7 @@ export class EnterpriseDocumentController extends BaseController<IEnterpriseDocu
             bearWeightColumn.description = "Every Bear needs a Weight";
             bearWeightColumn.fieldStyle = FieldStyle.Number;
             bearWeightColumn.primitiveType = PrimitiveType.Decimal;
-            bearWeightColumn.values = ["200.2", "54.4","82.9"];
+            bearWeightColumn.values = ["200.2", "54.4", "82.9"];
             bearWeightColumn.validators.push(validator);
             bearDataTable.columns.push(bearWeightColumn);
 

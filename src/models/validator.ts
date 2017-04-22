@@ -13,18 +13,18 @@ export interface IValidator extends Document {
 
 export const ValidatorSchema = new Schema({
     validationType: { type: Number, enum: [EnumHelper.GetValuesFromEnum(ValidationType)] },
-    min: {type: Number},
-    max: {type:Number},
-    regex: {type:String},
-    dateMax: {type:Date},
-    dateMin: {type:Date}
-},{timestamps:true});
+    min: { type: Number },
+    max: { type: Number },
+    regex: { type: String },
+    dateMax: { type: Date },
+    dateMin: { type: Date }
+}, { timestamps: false, _id: false });
 
-ValidatorSchema.pre('save',function(next){
+ValidatorSchema.pre('save', function (next) {
     //If there's any validators, this field requires validation.
     next();
 });
 
-export interface IValidatorComposite extends IValidator, Document {};
+export interface IValidatorComposite extends IValidator, Document { };
 
-export const ValidatorComposite:Model<IValidatorComposite> = mongoose.model<IValidatorComposite>('validator', ValidatorSchema);
+export const ValidatorComposite: Model<IValidatorComposite> = mongoose.model<IValidatorComposite>('validator', ValidatorSchema);
