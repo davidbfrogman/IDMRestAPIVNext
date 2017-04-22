@@ -12,8 +12,4 @@ export class UserRouter extends BaseRouter<UserController> {
         this.resource = '/users';
         super.controller = this.UserController;
     }
-
-    public getRouter(): Router {
-        return super.getBaseRouter();
-    }
 }

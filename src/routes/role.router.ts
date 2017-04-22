@@ -12,8 +12,4 @@ export class RoleRouter extends BaseRouter<RoleController> {
         this.resource = '/roles';
         super.controller = this.RoleController;
     }
-
-    public getRouter(): Router {
-        return super.getBaseRouter();
-    }
 }

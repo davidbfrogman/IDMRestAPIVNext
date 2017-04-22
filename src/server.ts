@@ -19,6 +19,8 @@ import { AuthenticationRouter } from './routes/authentication.router';
 import { Router } from 'express';
 import { RoleRouter } from "./routes/role.router";
 import { PermissionRouter } from "./routes/permission.router";
+import { EnterpriseDocumentRouter } from "./routes/enterprise-document.router";
+import { EnterpriseEnumerationRouter } from "./routes/enterprise-enumeration.router";
 
 log.remove(log.transports.Console);
 log.add(log.transports.Console, { colorize: true });
@@ -57,6 +59,8 @@ app.use('/authenticate', new AuthenticationRouter().getRouter());
 //app.use('/api*', new AuthenticationRouter().authenticationRequestValidation);
 
 app.use('/api', new DocumentTemplateRouter().getRouter());
+app.use('/api', new EnterpriseDocumentRouter().getRouter());
+app.use('/api', new EnterpriseEnumerationRouter().getRouter());
 app.use('/api/admin', new UserRouter().getRouter());
 app.use('/api/admin', new RoleRouter().getRouter());
 app.use('/api/admin', new PermissionRouter().getRouter());

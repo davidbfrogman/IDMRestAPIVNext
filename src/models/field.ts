@@ -6,10 +6,10 @@ import { FieldStyle, PrimitiveType, EnumHelper } from '../enumerations';
 export interface IField extends Document {
     name: string;
     description: string;
-    tooltip: string;
+    tooltip?: string;
     fieldStyle: FieldStyle;
     primitiveType: PrimitiveType;
-    validators: Array<IValidator>;
+    validators?: Array<IValidator>;
     value: string;
 }
 
@@ -32,6 +32,6 @@ FieldSchema.pre('update',function(next){
     next();
 });
 
-export interface IFieldMongooseComposite extends IField, Document {};
+export interface IFieldComposite extends IField, Document {};
 
-export const FieldMongooseComposite:Model<IFieldMongooseComposite> = mongoose.model<IFieldMongooseComposite>('Field', FieldSchema);
+export const FieldComposite:Model<IFieldComposite> = mongoose.model<IFieldComposite>('field', FieldSchema);

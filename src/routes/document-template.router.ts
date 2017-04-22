@@ -12,8 +12,4 @@ export class DocumentTemplateRouter extends BaseRouter<DocumentTemplateControlle
         this.resource = '/document-templates';
         super.controller = this.documentTemplateController;
     }
-
-    public getRouter(): Router {
-        return super.getBaseRouter();
-    }
 }

@@ -25,6 +25,6 @@ ValidatorSchema.pre('save',function(next){
     next();
 });
 
-export interface IValidatorMongooseComposite extends IValidator, Document {};
+export interface IValidatorComposite extends IValidator, Document {};
 
-export const ValidatorMongooseComposite:Model<IValidatorMongooseComposite> = mongoose.model<IValidatorMongooseComposite>('Validator', ValidatorSchema);
+export const ValidatorComposite:Model<IValidatorComposite> = mongoose.model<IValidatorComposite>('validator', ValidatorSchema);

@@ -1,4 +1,4 @@
-import { IUserMongooseComposite, UserMongooseComposite } from '../models/user';
+import { IUserComposite, UserComposite } from '../models/user';
 import { Router, Request, Response, RequestParamHandler, NextFunction, RequestHandler, Application } from 'express';
 import mongoose = require('mongoose');
 import { Schema, Model, Document } from 'mongoose';
@@ -8,14 +8,14 @@ var bcrypt = require('bcrypt');
 
 const jwt = require('jsonwebtoken');
 
-export class AuthenticationController extends BaseController<IUserMongooseComposite> {
+export class AuthenticationController extends BaseController<IUserComposite> {
     private saltRounds: Number = 10;
     private tokenExpiration: String = '1d';
     public defaultPopulationArgument = null;
 
     constructor() {
         super();
-        super.mongooseModelInstance = UserMongooseComposite;
+        super.mongooseModelInstance = UserComposite;
     }
 
     public authenticate(request: Request, response: Response, next: NextFunction): Promise<any> {

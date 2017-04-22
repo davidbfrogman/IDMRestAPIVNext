@@ -22,6 +22,6 @@ PermissionSchema.pre('save',function(next){
     next();
 });
 
-export interface IPermissionMongooseComposite extends IPermission, Document {};
+export interface IPermissionComposite extends IPermission, Document {};
 
-export const PermissionMongooseComposite:Model<IPermissionMongooseComposite> = mongoose.model<IPermissionMongooseComposite>('Permission', PermissionSchema);
+export const PermissionComposite:Model<IPermissionComposite> = mongoose.model<IPermissionComposite>('permission', PermissionSchema);

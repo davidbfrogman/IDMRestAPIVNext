@@ -12,8 +12,4 @@ export class PermissionRouter extends BaseRouter<PermissionController> {
         this.resource = '/permissions';
         super.controller = this.PermissionController;
     }
-
-    public getRouter(): Router {
-        return super.getBaseRouter();
-    }
 }

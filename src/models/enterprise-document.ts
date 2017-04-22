@@ -2,41 +2,48 @@ import { Document, Model, Schema } from 'mongoose';
 import { mongoose } from '../config/database';
 import { FieldSchema, IField } from './field'
 import { IEnterpriseEnumeration } from "./enterprise-enumeration";
+import { IDataTable, DataTableSchema } from "./data-table";
+import { ISelectedEnumeration, SelectedEnumerationSchema } from "./selected-enumeration";
 
-export interface IDocumentTemplate extends Document {
+export interface IEnterpriseDocument extends Document {
     name: string
     description?: string;
     fields: IField[];
-    enterpriseEnumeration: IEnterpriseEnumeration[];
+    selectedEnumerations: ISelectedEnumeration[];
     version: number;
+    isCheckedOut: boolean;
+    checkedOutBy: string;
+    checkedOutDate: Date;
     createdAt?: Date; // Automatically created by mongoose.
     modifiedAt?: Date; // Automatically created by mongoose.
+    dataTables: IDataTable[];
 }
 
-export const DocumentTemplateSchema = new Schema({
+export const EnterpriseDocumentSchema = new Schema({
     name: { type: String },
     description: { type: String },
     version:{type:Number, default:0},
-    enumerations: [{ type : Schema.Types.ObjectId, ref: 'enterpriseEnumeration' }],
+    isCheckedOut:{type: Boolean, required:true, default: false},
+    checkedOutBy: { type: String },
     fields:[FieldSchema],
+    dataTables:[DataTableSchema],
+    selectedEnumerations: [SelectedEnumerationSchema]
 },{timestamps:true});
 
 // If you do any pre save methods, and you use fat arrow syntax 'this' doesn't refer to the document.
-// tslint:disable-next-line:only-arrow-functions
-DocumentTemplateSchema.pre('save',function (next){
+EnterpriseDocumentSchema.pre('save',function (next){
     next();
 });
 
 // If you do any pre save methods, and you use fat arrow syntax 'this' doesn't refer to the document.
-DocumentTemplateSchema.pre('update',function (next){
+EnterpriseDocumentSchema.pre('update',function (next){
     // If there's any validators, this field requires validation.
     // TODO: Pull the version from the db, remember update could be only a partial doc template;
     this.version = this.version ? this.version++ : null;
     next();
 });
 
-export interface IDocumentTemplateComposite extends IDocumentTemplate, Document {};
+export interface IEnterpriseDocumentComposite extends IEnterpriseDocument, Document {};
 
-// tslint:disable-next-line:variable-name
-export const DocumentTemplateComposite: Model<IDocumentTemplateComposite>
-    = mongoose.model<IDocumentTemplateComposite>('documentTemplate', DocumentTemplateSchema);
+export const EnterpriseDocumentComposite: Model<IEnterpriseDocumentComposite> = 
+    mongoose.model<IEnterpriseDocumentComposite>('enterpriseDocument', EnterpriseDocumentSchema);

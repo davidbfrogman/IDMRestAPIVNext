@@ -21,7 +21,7 @@ const UserSchema = new Schema({
     },
     passwordHash: {type: String, required: true, select: false},
     email: {type:String, unique:true},
-    roles: [{ type : Schema.Types.ObjectId, ref: 'Role' }]
+    roles: [{ type : Schema.Types.ObjectId, ref: 'role' }]
 },{timestamps:true});
 
 //If you do any pre save methods, and you use fat arrow syntax 'this' doesn't refer to the document.
@@ -30,6 +30,6 @@ UserSchema.pre('save',function(next){
     next();
 });
 
-export interface IUserMongooseComposite extends IUser, Document {};
+export interface IUserComposite extends IUser, Document {};
 
-export const UserMongooseComposite:Model<IUserMongooseComposite> = mongoose.model<IUserMongooseComposite>('User', UserSchema);
+export const UserComposite:Model<IUserComposite> = mongoose.model<IUserComposite>('user', UserSchema);

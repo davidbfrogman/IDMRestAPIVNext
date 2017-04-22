@@ -25,6 +25,7 @@ export enum PrimitiveType {
     Timestamp = 7,
     Double = 8,
     Boolean = 9,
+    Number = 10
 }
 
 

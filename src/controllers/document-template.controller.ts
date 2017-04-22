@@ -1,14 +1,14 @@
-import { Router, Request, Response, RequestParamHandler, NextFunction, RequestHandler } from 'express';
-import { IDocumentTemplateMongooseComposite, DocumentTemplateMongooseComposite } from '../models/document-template';
+import { NextFunction, Request, RequestHandler, RequestParamHandler, Response, Router } from 'express';
+import { DocumentTemplateComposite, IDocumentTemplateComposite } from '../models/document-template';
 import mongoose = require('mongoose');
-import { Schema, Model, Document } from 'mongoose';
-import { BaseController } from "./base/base.controller";
+import { Document, Model, Schema } from 'mongoose';
+import { BaseController } from './base/base.controller';
 
-export class DocumentTemplateController extends BaseController<IDocumentTemplateMongooseComposite> {
+export class DocumentTemplateController extends BaseController<IDocumentTemplateComposite> {
   public defaultPopulationArgument = null;
 
   constructor() {
     super();
-    super.mongooseModelInstance = DocumentTemplateMongooseComposite;
+    super.mongooseModelInstance = DocumentTemplateComposite;
   }
 }
