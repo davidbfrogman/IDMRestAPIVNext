@@ -35,6 +35,10 @@ export abstract class BaseRouter<TController extends BaseController<Document>>{
                         .get(`${this.resource}/count`, async (request: Request, response: Response, next: NextFunction) => {
                                 await this.controller.count(request, response, next);
                         })
+                        // Clears the entire collection
+                        .delete(`${this.resource}/clear`, (request: Request, response: Response, next: NextFunction) => {
+                                this.controller.clear(request, response, next);
+                        })
                         // Get Single Operation
                         .get(`${this.resource}/:id`, async (request: Request, response: Response, next: NextFunction) => {
                                 await this.controller.single(request, response, next);
@@ -54,11 +58,8 @@ export abstract class BaseRouter<TController extends BaseController<Document>>{
                         // Removes a single resource by id
                         .delete(`${this.resource}/:id`, async (request: Request, response: Response, next: NextFunction) => {
                                 await this.controller.destroy(request, response, next);
-                        })
-                        // Clears the entire collection
-                        .delete(`${this.resource}/clear`, (request: Request, response: Response, next: NextFunction) => {
-                                this.controller.clear(request, response, next);
                         });
+
 
                 return this.router;
         }
