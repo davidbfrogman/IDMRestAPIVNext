@@ -9,19 +9,19 @@ export abstract class BaseController<IMongooseDocument extends Document>{
   public searchCriteria: SearchCriteria;
   public abstract defaultPopulationArgument: object;
 
-  public isValid(model: IMongooseDocument): ValidationError[]{
+  public isValid(model: IMongooseDocument): ValidationError[] {
     return null;
   };
 
-  public preCreateHook(model: IMongooseDocument): IMongooseDocument{
+  public preCreateHook(model: IMongooseDocument): IMongooseDocument {
     return model;
   }
 
-  public preUpdateHook(model: IMongooseDocument): IMongooseDocument{
+  public preUpdateHook(model: IMongooseDocument): IMongooseDocument {
     return model;
   }
 
-  public preListHook(models: IMongooseDocument[]): IMongooseDocument[]{
+  public preListHook(models: IMongooseDocument[]): IMongooseDocument[] {
     return models;
   }
 
@@ -51,7 +51,7 @@ export abstract class BaseController<IMongooseDocument extends Document>{
   }
 
   public single(request: Request, response: Response, next: NextFunction): Promise<IMongooseDocument> {
-    
+
     let query = this.mongooseModelInstance
       .findById(this.getId(request));
 
@@ -63,7 +63,7 @@ export abstract class BaseController<IMongooseDocument extends Document>{
         error['status'] = 404;
         throw (error);
       }
-      
+
       response.json(item);
       log.info(`Executed Single Operation: ${this.mongooseModelInstance.collection.name}, item._id: ${item._id}`);
       return item;
@@ -101,7 +101,7 @@ export abstract class BaseController<IMongooseDocument extends Document>{
     let modelInstance: IMongooseDocument = this.preCreateHook(new this.mongooseModelInstance(request.body));
 
     let validationErrors = this.isValid(modelInstance);
-    if(validationErrors && validationErrors.length > 0){
+    if (validationErrors && validationErrors.length > 0) {
       this.respondWithValidationErrors(request, response, next, validationErrors);
       return null;
     }
@@ -131,7 +131,7 @@ export abstract class BaseController<IMongooseDocument extends Document>{
     let modelInstance: IMongooseDocument = this.preUpdateHook(new this.mongooseModelInstance(request.body));
 
     let validationErrors = this.isValid(modelInstance);
-    if(validationErrors && validationErrors.length > 0){
+    if (validationErrors && validationErrors.length > 0) {
       this.respondWithValidationErrors(request, response, next, validationErrors);
       return null;
     }
@@ -179,6 +179,20 @@ export abstract class BaseController<IMongooseDocument extends Document>{
       .catch((error) => { next(error); });
   }
 
+  public clear(request: Request, response: Response, next: NextFunction): void {
+    let query = this.mongooseModelInstance.remove({});
+
+    query.then(() => {
+      response.json({
+        Collection: this.mongooseModelInstance.collection.name,
+        Message: "All items cleared from collection"
+      });
+
+      log.info(`Cleared the entire collection: ${this.mongooseModelInstance.collection.name}`);
+    })
+      .catch((error) => { next(error); });
+  }
+
   public query(request: Request, response: Response, next: NextFunction): Promise<IMongooseDocument[]> {
     let query = this.mongooseModelInstance.find(request.body);
 
@@ -194,10 +208,10 @@ export abstract class BaseController<IMongooseDocument extends Document>{
       .catch((error) => { next(error); });
   }
 
-  public respondWithValidationErrors(request: Request, response: Response, next: NextFunction, validationErrors: ValidationError[]): void{
-    response.json({ 
+  public respondWithValidationErrors(request: Request, response: Response, next: NextFunction, validationErrors: ValidationError[]): void {
+    response.json({
       ValidationError: "Your Item did not pass validation",
-      ValidationErrors: validationErrors 
+      ValidationErrors: validationErrors
     });
   }
 }
