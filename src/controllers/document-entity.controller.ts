@@ -1,17 +1,20 @@
 import { NextFunction, Request, RequestHandler, RequestParamHandler, Response, Router } from 'express';
-import { EnterpriseDocumentComposite, IEnterpriseDocument } from '../models/enterprise-document';
+import { DocumentEntityComposite, IDocumentEntity } from '../models/document-entity';
 import { Document, Model, Schema } from 'mongoose';
 import { BaseController } from './base/base.controller';
 import { IField, FieldComposite } from "../models/field";
-import { FieldStyle, PrimitiveType, EnumHelper, ValidationType } from '../enumerations';
 import { EnterpriseEnumerationController } from "./enterprise-enumeration.controller";
 import { EnterpriseEnumerationComposite, IEnterpriseEnumeration } from "../models/enterprise-enumeration";
 import { DataTableComposite } from "../models/data-table";
 import { ValidatorComposite } from "../models/validator";
 import { SelectedEnumerationComposite } from "../models/selected-enumeration";
 import { ColumnComposite } from "../models/column";
+import { Constants } from "../constants";
+import { ValidationError } from "../models/validation-error";
+import { DocumentEntityValidator } from "../validators/document-entity.validator";
+import { FieldStyle, ValidationType } from "../enumerations";
 
-export class EnterpriseDocumentController extends BaseController<IEnterpriseDocument> {
+export class DocumentEntityController extends BaseController<IDocumentEntity> {
     public defaultPopulationArgument =
     {
         path: 'selectedEnumerations.fromEnumeration'
@@ -19,7 +22,23 @@ export class EnterpriseDocumentController extends BaseController<IEnterpriseDocu
 
     constructor() {
         super();
-        super.mongooseModelInstance = EnterpriseDocumentComposite;
+        super.mongooseModelInstance = DocumentEntityComposite;
+    }
+
+    public preCreateHook(model: IDocumentEntity): IDocumentEntity {
+        model.href = `${Constants.APIEndpoint}${Constants.DocumentEntitiesEndpoint}/${model._id}`;
+        return model;
+    }
+
+    public preUpdateHook(model: IDocumentEntity): IDocumentEntity {
+        model.href = `${Constants.APIEndpoint}${Constants.DocumentEntitiesEndpoint}/${model._id}`;
+        // TODO always get the current version from the database.
+        model.version = model.version++;
+        return model;
+    }
+
+    public isValid(model: IDocumentEntity): ValidationError[]{
+        return DocumentEntityValidator.isValid(model);
     }
 
     public utility(request: Request, response: Response, next: NextFunction): void {
@@ -34,7 +53,6 @@ export class EnterpriseDocumentController extends BaseController<IEnterpriseDocu
             Invoicefield.description = "The invoice number for an invoice";
             Invoicefield.tooltip = "This is the fancy invoice number";
             Invoicefield.fieldStyle = FieldStyle.Number;
-            Invoicefield.primitiveType = PrimitiveType.Number;
             Invoicefield.value = "12356";
 
             let InvoiceTotal = new FieldComposite();
@@ -42,7 +60,6 @@ export class EnterpriseDocumentController extends BaseController<IEnterpriseDocu
             InvoiceTotal.description = "The total on the invoice";
             InvoiceTotal.tooltip = "A total across the invoice";
             InvoiceTotal.fieldStyle = FieldStyle.Number;
-            InvoiceTotal.primitiveType = PrimitiveType.Decimal;
             InvoiceTotal.value = "456798.54";
 
             fields.push(Invoicefield);
@@ -60,7 +77,6 @@ export class EnterpriseDocumentController extends BaseController<IEnterpriseDocu
             bearNameColumn.tooltip = "Enter a name for your bear";
             bearNameColumn.description = "Every Bear needs a name";
             bearNameColumn.fieldStyle = FieldStyle.String;
-            bearNameColumn.primitiveType = PrimitiveType.String;
             bearNameColumn.values = ["Smokey", "Boo-Boo", "Sleepy"];
             bearNameColumn.validators.push(validator);
             bearDataTable.columns.push(bearNameColumn);
@@ -69,12 +85,11 @@ export class EnterpriseDocumentController extends BaseController<IEnterpriseDocu
             bearWeightColumn.tooltip = "A weight is important";
             bearWeightColumn.description = "Every Bear needs a Weight";
             bearWeightColumn.fieldStyle = FieldStyle.Number;
-            bearWeightColumn.primitiveType = PrimitiveType.Decimal;
             bearWeightColumn.values = ["200.2", "54.4", "82.9"];
             bearWeightColumn.validators.push(validator);
             bearDataTable.columns.push(bearWeightColumn);
 
-            let edc = new EnterpriseDocumentComposite();
+            let edc = new DocumentEntityComposite();
             edc.name = "New Document";
             edc.description = "New Description";
             edc.fields = fields;

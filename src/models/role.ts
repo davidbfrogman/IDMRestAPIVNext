@@ -4,9 +4,10 @@ import { IField, FieldSchema } from './field';
 import { IPermission, PermissionSchema } from './permission';
 
 export interface IRole extends Document {
-    name: String;
-    description: String;
+    name: string;
+    description: string;
     permissions: Array<IPermission>;
+    href: string;
     createdAt?: Date; //Automatically created by mongoose.
     modifiedAt?: Date; //Automatically created by mongoose.
 }
@@ -14,6 +15,7 @@ export interface IRole extends Document {
 export const RoleSchema = new Schema({
     name: {type: String},
     description: {type: String},
+    href: {type: String},
     permissions: [{type: Schema.Types.ObjectId, ref: 'permission'}]
 },{timestamps:true});
 

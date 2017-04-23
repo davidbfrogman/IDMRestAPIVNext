@@ -8,9 +8,10 @@ export interface IEnumValue{
 }
 
 export interface IEnterpriseEnumeration extends Document {
-    name: String;
-    description?: String;
+    name: string;
+    description?: string;
     enumerationValues: Array<IEnumValue>;
+    href: string;
     createdAt?: Date; //Automatically created by mongoose.
     modifiedAt?: Date; //Automatically created by mongoose.
 }
@@ -18,6 +19,7 @@ export interface IEnterpriseEnumeration extends Document {
 export const EnterpriseEnumerationSchema = new Schema({
     name: {type: String},
     description: {type: String},
+    href: {type: String},
     enumerationValues: {type: Array<IEnumValue>()},
 },{timestamps:true});
 

@@ -19,8 +19,9 @@ import { AuthenticationRouter } from './routes/authentication.router';
 import { Router } from 'express';
 import { RoleRouter } from "./routes/role.router";
 import { PermissionRouter } from "./routes/permission.router";
-import { EnterpriseDocumentRouter } from "./routes/enterprise-document.router";
+import { DocumentEntityRouter } from "./routes/document-entity.router";
 import { EnterpriseEnumerationRouter } from "./routes/enterprise-enumeration.router";
+import { Constants } from "./constants";
 
 log.remove(log.transports.Console);
 log.add(log.transports.Console, { colorize: true });
@@ -58,14 +59,14 @@ app.use('/authenticate', new AuthenticationRouter().getRouter());
 //Commenting out authentication for development
 //app.use('/api*', new AuthenticationRouter().authenticationRequestValidation);
 
-app.use('/api', new DocumentTemplateRouter().getRouter());
-app.use('/api', new EnterpriseDocumentRouter().getRouter());
-app.use('/api', new EnterpriseEnumerationRouter().getRouter());
-app.use('/api/admin', new UserRouter().getRouter());
-app.use('/api/admin', new RoleRouter().getRouter());
-app.use('/api/admin', new PermissionRouter().getRouter());
-app.use('/api-docs', express.static(__dirname + '/swagger/swagger-ui'));
-app.use('/swagger-definition', express.static(__dirname + '/swagger/'));
+app.use(Constants.APIEndpoint, new DocumentTemplateRouter().getRouter());
+app.use(Constants.APIEndpoint, new DocumentEntityRouter().getRouter());
+app.use(Constants.APIEndpoint, new EnterpriseEnumerationRouter().getRouter());
+app.use(Constants.AdminEndpoint, new UserRouter().getRouter());
+app.use(Constants.AdminEndpoint, new RoleRouter().getRouter());
+app.use(Constants.AdminEndpoint, new PermissionRouter().getRouter());
+app.use(Constants.APIDocsEndpoint, express.static(__dirname + '/swagger/swagger-ui'));
+app.use(Constants.APISwaggerDefinitionEndpoint, express.static(__dirname + '/swagger/'));
 
 // Homepage ============================================================
 app.get('/', (request: express.Request, response: express.Response) => {

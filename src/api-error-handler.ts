@@ -1,8 +1,9 @@
 import { NextFunction, Request, Response } from "@types/express";
+import log = require('winston');
 
 export class ApiErrorHandler {
     public static HandleApiError(error: Error & { status: number }, request: Request, response: Response, next: NextFunction) {
-        console.error(error.stack);
+        log.error(error.stack);
         if(!response.status) {response.status(error.status || 500);}
 
         //If there was an authentication errror.

@@ -1,7 +1,7 @@
 import { mongoose } from '../config/database';
 import { Schema, Model, Document } from 'mongoose';
 import { IValidator, ValidatorSchema } from './validator';
-import { FieldStyle, PrimitiveType, EnumHelper } from '../enumerations';
+import { FieldStyle, EnumHelper } from '../enumerations';
 import { IField } from "./field";
 
 export interface IColumn{
@@ -9,7 +9,6 @@ export interface IColumn{
     tooltip?: string;
     description?: String;
     fieldStyle: FieldStyle;
-    primitiveType: PrimitiveType;  
     values: Array<string>;
     validators?: Array<IValidator>;
 }
@@ -19,7 +18,6 @@ export const ColumnSchema = new Schema({
     description: { type: String },
     tooltip: { type: String },
     fieldStyle: { type: Number, enum: [EnumHelper.GetValuesFromEnum(FieldStyle)] },
-    primitiveType: { type: Number, enum: [EnumHelper.GetValuesFromEnum(PrimitiveType)] },
     validators: [ValidatorSchema],
     values: {type: [String] }
 },{timestamps:false, _id: false});

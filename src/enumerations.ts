@@ -11,21 +11,6 @@ export enum FieldStyle {
     Date = 4,
     Timestamp = 5,
     Boolean = 6,
-    ValueSet = 7,
-    MultiValue = 8,
-}
-
-export enum PrimitiveType {
-    String = 1,
-    Short = 2,
-    Long = 3,
-    Decimal = 4,
-    DateTime = 5,
-    Time = 6,
-    Timestamp = 7,
-    Double = 8,
-    Boolean = 9,
-    Number = 10
 }
 
 

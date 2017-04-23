@@ -3,6 +3,7 @@ import { Router, Request, Response, RequestParamHandler, NextFunction, RequestHa
 import mongoose = require('mongoose');
 import { Schema, Model, Document } from 'mongoose';
 import { BaseController } from "./base/base.controller";
+import { Constants } from "../constants";
 var bcrypt = require('bcrypt');
 
 export class UserController extends BaseController<IUserComposite> {
@@ -34,5 +35,15 @@ export class UserController extends BaseController<IUserComposite> {
       request.body = user;  //If we push this back onto the request, then the rest of our architecture will just work. 
       return super.create(request, response, next);
     });
+  }
+
+  public preCreateHook(model: IUserComposite): IUserComposite{
+    model.href = `${Constants.APIEndpoint}${Constants.UsersEndpoint}/${model._id}`;
+    return model;
+  }
+
+  public preUpdateHook(model: IUserComposite): IUserComposite{
+    model.href = `${Constants.APIEndpoint}${Constants.UsersEndpoint}/${model._id}`;
+    return model;
   }
 }

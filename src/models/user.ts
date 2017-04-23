@@ -8,6 +8,7 @@ export interface IUser extends Document {
     passwordHash: string;
     email: string;
     roles: Array<IRole>;
+    href: string;
     createdAt?: Date; //Automatically created by mongoose.
     modifiedAt?: Date; //Automatically created by mongoose.
 }
@@ -20,6 +21,7 @@ const UserSchema = new Schema({
         required:true
     },
     passwordHash: {type: String, required: true, select: false},
+    href: {type:String},
     email: {type:String, unique:true},
     roles: [{ type : Schema.Types.ObjectId, ref: 'role' }]
 },{timestamps:true});

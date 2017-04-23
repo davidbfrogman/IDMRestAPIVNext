@@ -4,11 +4,12 @@ import mongoose = require('mongoose');
 import { Schema, Model, Document } from 'mongoose';
 import { BaseController } from './base/base.controller';
 import { config } from '../config/config';
-var bcrypt = require('bcrypt');
 
+const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
 export class AuthenticationController extends BaseController<IUserComposite> {
+
     private saltRounds: Number = 10;
     private tokenExpiration: String = '1d';
     public defaultPopulationArgument = null;

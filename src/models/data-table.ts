@@ -1,7 +1,6 @@
 import { mongoose } from '../config/database';
 import { Schema, Model, Document } from 'mongoose';
 import { IValidator, ValidatorSchema } from './validator';
-import { FieldStyle, PrimitiveType, EnumHelper } from '../enumerations';
 import { IField } from "./field";
 import { IColumn, ColumnSchema } from "./column";
 
