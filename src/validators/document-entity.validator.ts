@@ -1,13 +1,16 @@
 import { IDocumentEntity } from "../models/document-entity";
 import { ValidationError } from "../models/validation-error";
+import { FieldValidator } from "./field.validator";
 
 export class DocumentEntityValidator {
 
-    public static isValid(model: IDocumentEntity): ValidationError[] {
-        const validationErrors = new Array<ValidationError>();
-        if (model.dataTables) {
-            for (var index = 0; index < model.dataTables.length; index++) {
-                var dataTable = model.dataTables[index];
+    public static isValid(document: IDocumentEntity): ValidationError[] {
+        let validationErrors = new Array<ValidationError>();
+
+        // Validate Data Table column length matches
+        if (document.dataTables) {
+            for (var index = 0; index < document.dataTables.length; index++) {
+                var dataTable = document.dataTables[index];
                 // We're only going to validate column length if there's more than one column.
                 if (dataTable && dataTable.columns && dataTable.columns.length > 1) {
                     let firstLength = 0;
@@ -20,7 +23,7 @@ export class DocumentEntityValidator {
                             if (firstLength != column.values.length) {
                                 validationErrors.push({
                                     message: `Column Length for data table: ${dataTable.name}, does not match for all columns.  All columns must have the same number of entries.`,
-                                    path: `${model.name}/${dataTable.name}/${column.name}`,
+                                    path: `${document.name}/${dataTable.name}/${column.name}`,
                                     field: `column: ${column.name}`,
                                     value: 'This validation just checks length, so no specific value availible.'
                                 })
@@ -30,6 +33,13 @@ export class DocumentEntityValidator {
                 }
             }
         }
+
+        // Validate each field on the document
+        for (var index = 0; index < document.fields.length; index++) {
+            var field = document.fields[index];
+            validationErrors = validationErrors.concat(FieldValidator.isValid(field));
+        }
+
         return validationErrors;
     }
 }

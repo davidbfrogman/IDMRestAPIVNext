@@ -7,7 +7,7 @@ export class FieldValidator {
 
     public static isValid(field: IField): ValidationError[] {
         const validationErrors = new Array<ValidationError>();
-        
+
         // Check validators
         if (field.validators && field.validators.length > 0) {
 
@@ -16,7 +16,7 @@ export class FieldValidator {
         // Check Types
         switch (field.fieldStyle) {
             case FieldStyle.Number:
-                if (+field.value === NaN) {
+                if (isNaN(+field.value)) {
                     // Input was not a number so throw a validation error.
                     validationErrors.push({
                         field: field.name,
