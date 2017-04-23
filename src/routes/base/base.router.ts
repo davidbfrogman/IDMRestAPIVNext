@@ -13,9 +13,8 @@ export abstract class BaseRouter<TController extends BaseController<Document>>{
         public getRouter(): Router {
                 this.router.all(`${this.resource}`, async (request: Request, response: Response, next: NextFunction) => {
                         // You can put logic here that needs to be run for every request.
-                        // For instance we could do authentication here.
                         next();
-                })
+                    })
                         // Listing Operation
                         .get(`${this.resource}`, async (request: Request, response: Response, next: NextFunction) => {
                                 await this.controller.list(request, response, next);
