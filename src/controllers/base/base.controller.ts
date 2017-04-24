@@ -148,7 +148,8 @@ export abstract class BaseController<IMongooseDocument extends Document>{
         }
 
         this.mongooseModelInstance
-          .findByIdAndUpdate(this.getId(request), itemAfterUpdateHook, { new: true })
+          // New True means to return the newly updated object. (nothing to do with creating a new item)
+          .findByIdAndUpdate(this.getId(request), itemAfterUpdateHook, { new: true }) 
           .then((updatedItem: IMongooseDocument) => {
             if (!updatedItem) {
               let error = new Error('Item Not Found');
