@@ -180,15 +180,20 @@ export abstract class BaseController<IMongooseDocument extends Document>{
   }
 
   public clear(request: Request, response: Response, next: NextFunction): void {
-    let query = this.mongooseModelInstance.remove({});
+    this.mongooseModelInstance.count(request.body).exec().then((count) => {
+      let query = this.mongooseModelInstance.remove(request.body);
 
-    query.then(() => {
-      response.json({
-        Collection: this.mongooseModelInstance.collection.name,
-        Message: "All items cleared from collection"
-      });
+      query.then(() => {
+        response.json({
+          Collection: this.mongooseModelInstance.collection.name,
+          Message: "All items cleared from collection",
+          CountOfItemsRemoved: count
+        });
 
-      log.info(`Cleared the entire collection: ${this.mongooseModelInstance.collection.name}`);
+        log.info(`Cleared the entire collection: ${this.mongooseModelInstance.collection.name}`);
+      })
+        .catch((error) => { next(error); });
+
     })
       .catch((error) => { next(error); });
   }
