@@ -36,7 +36,7 @@ export class DocumentEntityController extends BaseController<IDocumentEntity> {
         .then((document) => {
             model.href = `${Constants.APIEndpoint}${Constants.DocumentEntitiesEndpoint}/${model._id}`;
             // TODO always get the current version from the database.
-            model.version = document.version++;
+            model.version = ++document.version;
             return model;
         });
     }
