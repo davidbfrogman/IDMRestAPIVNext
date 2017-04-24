@@ -124,8 +124,6 @@ export abstract class BaseController<IMongooseDocument extends Document>{
         .catch((error) => { next(error); });
     })
       .catch((error) => { next(error); });
-
-
   }
 
   // For now update full/partial do exactly the same thing, whenever we want to break out
