@@ -40,10 +40,9 @@ export abstract class BaseController<IMongooseDocument extends Document>{
 
     query = this.defaultPopulationArgument ? query.populate(this.defaultPopulationArgument) : query;
 
-    return query.exec()
-      .then((listedItems: IMongooseDocument[]) => {
+    return query.exec((listedItems: IMongooseDocument[]) => {
 
-        return this.preListHook(listedItems)
+        this.preListHook(listedItems)
           .then((itemsAfterPreListHook) => {
 
             response.json(itemsAfterPreListHook);
@@ -51,8 +50,8 @@ export abstract class BaseController<IMongooseDocument extends Document>{
             log.info(`Executed List Operation: ${this.mongooseModelInstance.collection.name}, Count: ${itemsAfterPreListHook.length}`);
 
             return itemsAfterPreListHook;
-          });
-
+          })
+          .catch((error) => { next(error); });
       })
       .catch((error) => { next(error); });
   }
@@ -114,7 +113,7 @@ export abstract class BaseController<IMongooseDocument extends Document>{
         return null;
       }
 
-      return itemAfterPreCreateHook.save()
+      itemAfterPreCreateHook.save()
         .then((savedItem: IMongooseDocument) => {
 
           response.json({ savedItem });
@@ -148,8 +147,8 @@ export abstract class BaseController<IMongooseDocument extends Document>{
           return null;
         }
 
-        return this.mongooseModelInstance
-          .findByIdAndUpdate(this.getId(request), itemAfterUpdateHook, { new: false })
+        this.mongooseModelInstance
+          .findByIdAndUpdate(this.getId(request), itemAfterUpdateHook, { new: true })
           .then((updatedItem: IMongooseDocument) => {
             if (!updatedItem) {
               let error = new Error('Item Not Found');

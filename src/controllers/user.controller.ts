@@ -5,6 +5,7 @@ import { Schema, Model, Document } from 'mongoose';
 import { BaseController } from "./base/base.controller";
 import { Constants } from "../constants";
 var bcrypt = require('bcrypt');
+var Promise = require("bluebird");
 
 export class UserController extends BaseController<IUserComposite> {
   private saltRounds: Number = 10;
@@ -37,13 +38,13 @@ export class UserController extends BaseController<IUserComposite> {
     });
   }
 
-  public preCreateHook(model: IUserComposite): IUserComposite{
+  public preCreateHook(model: IUserComposite): Promise<IUserComposite>{
     model.href = `${Constants.APIEndpoint}${Constants.UsersEndpoint}/${model._id}`;
-    return model;
+    return Promise.resolve(model);
   }
 
-  public preUpdateHook(model: IUserComposite): IUserComposite{
+  public preUpdateHook(model: IUserComposite): Promise<IUserComposite>{
     model.href = `${Constants.APIEndpoint}${Constants.UsersEndpoint}/${model._id}`;
-    return model;
+    return Promise.resolve(model);
   }
 }

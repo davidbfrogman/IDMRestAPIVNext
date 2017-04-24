@@ -3,6 +3,7 @@ import mongoose = require('mongoose');
 import { Schema, Model, Document } from 'mongoose';
 import { BaseController } from "./base/base.controller";
 import { Constants } from "../constants";
+var Promise = require("bluebird");
 
 export class RoleController extends BaseController<IRoleComposite> {
   public defaultPopulationArgument =
@@ -15,13 +16,13 @@ export class RoleController extends BaseController<IRoleComposite> {
     super.mongooseModelInstance = RoleComposite;
   }
 
-  public preCreateHook(model: IRoleComposite): IRoleComposite{
+  public preCreateHook(model: IRoleComposite): Promise<IRoleComposite>{
     model.href = `${Constants.APIEndpoint}${Constants.RolesEndpoint}/${model._id}`;
-    return model;
+    return Promise.resolve(model);
   }
 
-  public preUpdateHook(model: IRoleComposite): IRoleComposite{
+  public preUpdateHook(model: IRoleComposite): Promise<IRoleComposite>{
     model.href = `${Constants.APIEndpoint}${Constants.RolesEndpoint}/${model._id}`;
-    return model;
+    return Promise.resolve(model);
   }
 }

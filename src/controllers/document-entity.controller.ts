@@ -32,7 +32,6 @@ export class DocumentEntityController extends BaseController<IDocumentEntity> {
     }
 
     public preUpdateHook(model: IDocumentEntity, request: Request): Promise<IDocumentEntity> {
-
         return DocumentEntityComposite.findById(super.getId(request))
         .then((document) => {
             model.href = `${Constants.APIEndpoint}${Constants.DocumentEntitiesEndpoint}/${model._id}`;
