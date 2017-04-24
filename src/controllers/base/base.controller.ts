@@ -3,6 +3,7 @@ import { Document, DocumentQuery, Model, Schema } from 'mongoose';
 import { SearchCriteria } from '../../models/search-criteria';
 import log = require('winston');
 import { ValidationError } from "../../models/validation-error";
+var Promise = require("bluebird");
 
 export abstract class BaseController<IMongooseDocument extends Document>{
   public mongooseModelInstance: Model<IMongooseDocument>;
@@ -13,16 +14,16 @@ export abstract class BaseController<IMongooseDocument extends Document>{
     return null;
   };
 
-  public preCreateHook(model: IMongooseDocument): IMongooseDocument {
-    return model;
+  public preCreateHook(model: IMongooseDocument): Promise<IMongooseDocument> {
+    return Promise.resolve(model);
   }
 
-  public preUpdateHook(model: IMongooseDocument): IMongooseDocument {
-    return model;
+  public preUpdateHook(model: IMongooseDocument, request: Request): Promise<IMongooseDocument> {
+    return Promise.resolve(model);
   }
 
-  public preListHook(models: IMongooseDocument[]): IMongooseDocument[] {
-    return models;
+  public preListHook(models: IMongooseDocument[]): Promise<IMongooseDocument[]> {
+    return Promise.resolve(models);
   }
 
   public getId(request: Request): string {
@@ -41,11 +42,17 @@ export abstract class BaseController<IMongooseDocument extends Document>{
 
     return query.exec()
       .then((listedItems: IMongooseDocument[]) => {
-        listedItems = this.preListHook(listedItems);
-        response.json(listedItems);
 
-        log.info(`Executed List Operation: ${this.mongooseModelInstance.collection.name}, Count: ${listedItems.length}`);
-        return listedItems;
+        return this.preListHook(listedItems)
+          .then((itemsAfterPreListHook) => {
+
+            response.json(itemsAfterPreListHook);
+
+            log.info(`Executed List Operation: ${this.mongooseModelInstance.collection.name}, Count: ${itemsAfterPreListHook.length}`);
+
+            return itemsAfterPreListHook;
+          });
+
       })
       .catch((error) => { next(error); });
   }
@@ -98,23 +105,28 @@ export abstract class BaseController<IMongooseDocument extends Document>{
   }
 
   public create(request: Request, response: Response, next: NextFunction): Promise<IMongooseDocument> {
-    let modelInstance: IMongooseDocument = this.preCreateHook(new this.mongooseModelInstance(request.body));
+    return this.preCreateHook(new this.mongooseModelInstance(request.body)).then((itemAfterPreCreateHook) => {
 
-    let validationErrors = this.isValid(modelInstance);
-    if (validationErrors && validationErrors.length > 0) {
-      this.respondWithValidationErrors(request, response, next, validationErrors);
-      return null;
-    }
+      let validationErrors = this.isValid(itemAfterPreCreateHook);
 
-    return modelInstance.save()
-      .then((item: IMongooseDocument) => {
+      if (validationErrors && validationErrors.length > 0) {
+        this.respondWithValidationErrors(request, response, next, validationErrors);
+        return null;
+      }
 
-        response.json({ item });
+      return itemAfterPreCreateHook.save()
+        .then((savedItem: IMongooseDocument) => {
 
-        log.info(`Created New: ${this.mongooseModelInstance.collection.name}, ID: ${item._id}`);
-        return item;
-      })
+          response.json({ savedItem });
+
+          log.info(`Created New: ${this.mongooseModelInstance.collection.name}, ID: ${savedItem._id}`);
+          return savedItem;
+        })
+        .catch((error) => { next(error); });
+    })
       .catch((error) => { next(error); });
+
+
   }
 
   // For now update full/partial do exactly the same thing, whenever we want to break out
@@ -128,27 +140,31 @@ export abstract class BaseController<IMongooseDocument extends Document>{
   }
 
   private update(request: Request, response: Response, next: NextFunction): Promise<IMongooseDocument> {
-    let modelInstance: IMongooseDocument = this.preUpdateHook(new this.mongooseModelInstance(request.body));
-
-    let validationErrors = this.isValid(modelInstance);
-    if (validationErrors && validationErrors.length > 0) {
-      this.respondWithValidationErrors(request, response, next, validationErrors);
-      return null;
-    }
-
-    return this.mongooseModelInstance
-      .findByIdAndUpdate(this.getId(request), modelInstance, { new: false })
-      .then((updatedItem: IMongooseDocument) => {
-        if (!updatedItem) {
-          let error = new Error('Item Not Found');
-          error['status'] = 404;
-          throw (error);
+    return this.preUpdateHook(new this.mongooseModelInstance(request.body), request)
+      .then((itemAfterUpdateHook) => {
+        let validationErrors = this.isValid(itemAfterUpdateHook);
+        if (validationErrors && validationErrors.length > 0) {
+          this.respondWithValidationErrors(request, response, next, validationErrors);
+          return null;
         }
 
-        response.json(updatedItem);
+        return this.mongooseModelInstance
+          .findByIdAndUpdate(this.getId(request), itemAfterUpdateHook, { new: false })
+          .then((updatedItem: IMongooseDocument) => {
+            if (!updatedItem) {
+              let error = new Error('Item Not Found');
+              error['status'] = 404;
+              throw (error);
+            }
 
-        log.info(`Updated a: ${this.mongooseModelInstance.collection.name}, ID: ${updatedItem._id}`);
-        return updatedItem;
+            response.json(updatedItem);
+
+            log.info(`Updated a: ${this.mongooseModelInstance.collection.name}, ID: ${updatedItem._id}`);
+            return updatedItem;
+          })
+          .catch((error) => {
+            next(error);
+          });
       })
       .catch((error) => {
         next(error);

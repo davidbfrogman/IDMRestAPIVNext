@@ -33,6 +33,7 @@
     "winston": "^2.3.1"
   },
   "devDependencies": {
+    "@types/bluebird": "^3.5.2",
     "@types/body-parser": "0.0.33",
     "@types/chai": "^3.5.0",
     "@types/chai-http": "0.0.30",

@@ -13,6 +13,7 @@ import { Constants } from "../constants";
 import { ValidationError } from "../models/validation-error";
 import { DocumentEntityValidator } from "../validators/document-entity.validator";
 import { FieldStyle, ValidationType } from "../enumerations";
+var Promise = require("bluebird");
 
 export class DocumentEntityController extends BaseController<IDocumentEntity> {
     public defaultPopulationArgument =
@@ -25,19 +26,23 @@ export class DocumentEntityController extends BaseController<IDocumentEntity> {
         super.mongooseModelInstance = DocumentEntityComposite;
     }
 
-    public preCreateHook(model: IDocumentEntity): IDocumentEntity {
+    public preCreateHook(model: IDocumentEntity): Promise<IDocumentEntity> {
         model.href = `${Constants.APIEndpoint}${Constants.DocumentEntitiesEndpoint}/${model._id}`;
-        return model;
+        return Promise.resolve(model);
     }
 
-    public preUpdateHook(model: IDocumentEntity): IDocumentEntity {
-        model.href = `${Constants.APIEndpoint}${Constants.DocumentEntitiesEndpoint}/${model._id}`;
-        // TODO always get the current version from the database.
-        model.version = model.version++;
-        return model;
+    public preUpdateHook(model: IDocumentEntity, request: Request): Promise<IDocumentEntity> {
+
+        return DocumentEntityComposite.findById(super.getId(request))
+        .then((document) => {
+            model.href = `${Constants.APIEndpoint}${Constants.DocumentEntitiesEndpoint}/${model._id}`;
+            // TODO always get the current version from the database.
+            model.version = document.version++;
+            return model;
+        });
     }
 
-    public isValid(model: IDocumentEntity): ValidationError[]{
+    public isValid(model: IDocumentEntity): ValidationError[] {
         return DocumentEntityValidator.isValid(model);
     }
 
