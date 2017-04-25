@@ -1,8 +1,9 @@
 import { NextFunction, Request, RequestHandler, RequestParamHandler, Response, Router } from 'express';
 import { Document, DocumentQuery, Model, Schema } from 'mongoose';
 import { SearchCriteria } from '../../models/search-criteria';
-import log = require('winston');
-import { ValidationError } from "../../models/validation-error";
+import * as log from 'winston';
+import { IValidationError } from "../../models/validation-error";
+import { BulkUpdateSummary } from "../../bulk-update-summary";
 var Promise = require("bluebird");
 
 export abstract class BaseController<IMongooseDocument extends Document>{
@@ -10,7 +11,7 @@ export abstract class BaseController<IMongooseDocument extends Document>{
   public searchCriteria: SearchCriteria;
   public abstract defaultPopulationArgument: object;
 
-  public isValid(model: IMongooseDocument): ValidationError[] {
+  public isValid(model: IMongooseDocument): IValidationError[] {
     return null;
   };
 
@@ -42,17 +43,17 @@ export abstract class BaseController<IMongooseDocument extends Document>{
 
     return query.exec((listedItems: IMongooseDocument[]) => {
 
-        this.preListHook(listedItems)
-          .then((itemsAfterPreListHook) => {
+      this.preListHook(listedItems)
+        .then((itemsAfterPreListHook) => {
 
-            response.json(itemsAfterPreListHook);
+          response.json(itemsAfterPreListHook);
 
-            log.info(`Executed List Operation: ${this.mongooseModelInstance.collection.name}, Count: ${itemsAfterPreListHook.length}`);
+          log.info(`Executed List Operation: ${this.mongooseModelInstance.collection.name}, Count: ${itemsAfterPreListHook.length}`);
 
-            return itemsAfterPreListHook;
-          })
-          .catch((error) => { next(error); });
-      })
+          return itemsAfterPreListHook;
+        })
+        .catch((error) => { next(error); });
+    })
       .catch((error) => { next(error); });
   }
 
@@ -147,7 +148,7 @@ export abstract class BaseController<IMongooseDocument extends Document>{
 
         this.mongooseModelInstance
           // New True means to return the newly updated object. (nothing to do with creating a new item)
-          .findByIdAndUpdate(this.getId(request), itemAfterUpdateHook, { new: true }) 
+          .findByIdAndUpdate(this.getId(request), itemAfterUpdateHook, { new: true })
           .then((updatedItem: IMongooseDocument) => {
             if (!updatedItem) {
               let error = new Error('Item Not Found');
@@ -167,6 +168,51 @@ export abstract class BaseController<IMongooseDocument extends Document>{
       .catch((error) => {
         next(error);
       });
+  }
+
+  public bulkUpdate(request: Request, response: Response, next: NextFunction): Promise<BulkUpdateSummary> {
+    // We need to seperate the put body into 2 parts.
+    // The put body will contain a query property, and a updateDocument property which will contain the fields to update.
+    // First we find the documents. 
+    let bulkUpdateSummary: BulkUpdateSummary = {
+      totalItemsUpdated: 0,
+      validationErrors: new Array<IValidationError>()
+    }
+
+    return this.mongooseModelInstance.find(request.body['query']).then((items) => {
+
+      for (var index = 0; index < items.length; index++) {
+        var item = items[index];
+
+        this.preUpdateHook(item, request).then((itemAfterUpdateHook) => {
+
+          let validationErrors = this.isValid(itemAfterUpdateHook);
+          if (validationErrors && validationErrors.length > 0) {
+            bulkUpdateSummary.validationErrors = bulkUpdateSummary.validationErrors.concat(validationErrors);
+            return;
+          }
+
+          this.mongooseModelInstance.findByIdAndUpdate(item._id, itemAfterUpdateHook).then((updatedItem) => {
+
+            bulkUpdateSummary.totalItemsUpdated = bulkUpdateSummary.totalItemsUpdated++;
+
+          }).catch((error) => {
+            next(error);
+          });
+        }).catch((error) => {
+          next(error);
+        });
+      }
+      response.json(bulkUpdateSummary);
+
+      log.info(`Bulk Update Command Issued on: ${this.mongooseModelInstance.collection.name}, 
+      Validation Error Count: ${bulkUpdateSummary.validationErrors ? bulkUpdateSummary.validationErrors.length : 0}
+      Total Items Updated Count:  ${bulkUpdateSummary.totalItemsUpdated}`);
+
+      return bulkUpdateSummary;
+    }).catch((error) => {
+      next(error);
+    });
   }
 
   public destroy(request: Request, response: Response, next: NextFunction): Promise<IMongooseDocument> {
@@ -227,7 +273,7 @@ export abstract class BaseController<IMongooseDocument extends Document>{
       .catch((error) => { next(error); });
   }
 
-  public respondWithValidationErrors(request: Request, response: Response, next: NextFunction, validationErrors: ValidationError[]): void {
+  public respondWithValidationErrors(request: Request, response: Response, next: NextFunction, validationErrors: IValidationError[]): void {
     response.json({
       ValidationError: "Your Item did not pass validation",
       ValidationErrors: validationErrors

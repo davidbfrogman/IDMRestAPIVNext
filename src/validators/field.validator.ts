@@ -1,12 +1,12 @@
-import { ValidationError } from "../models/validation-error";
+import { IValidationError } from "../models/validation-error";
 import { IField } from "../models/field";
 import { FieldStyle } from "../enumerations";
 import * as moment from 'moment';
 
 export class FieldValidator {
 
-    public static isValid(field: IField): ValidationError[] {
-        const validationErrors = new Array<ValidationError>();
+    public static isValid(field: IField): IValidationError[] {
+        const validationErrors = new Array<IValidationError>();
 
         // Check validators
         if (field.validators && field.validators.length > 0) {
@@ -71,6 +71,12 @@ export class FieldValidator {
                 }
                 break;
             default:
+                    validationErrors.push({
+                        field: field.name,
+                        message: "Expected type to match one  of the existing types, but it didn't.  Each field must have a field style.",
+                        path: `/field/${field.name}`,
+                        value: field.value
+                    });
                 break;
         }
         return validationErrors;

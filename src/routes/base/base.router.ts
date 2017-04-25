@@ -47,6 +47,10 @@ export abstract class BaseRouter<TController extends BaseController<Document>>{
                                 await this.controller.create(request, response, next);
                         })
                         // Updates a single resource
+                        .put(`${this.resource}`, async (request: Request, response: Response, next: NextFunction) => {
+                                await this.controller.bulkUpdate(request, response, next);
+                        })
+                        // Updates a single resource
                         .put(`${this.resource}/:id`, async (request: Request, response: Response, next: NextFunction) => {
                                 await this.controller.updateFull(request, response, next);
                         })

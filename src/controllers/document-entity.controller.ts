@@ -10,7 +10,7 @@ import { ValidatorComposite } from "../models/validator";
 import { SelectedEnumerationComposite } from "../models/selected-enumeration";
 import { ColumnComposite } from "../models/column";
 import { Constants } from "../constants";
-import { ValidationError } from "../models/validation-error";
+import { IValidationError } from "../models/validation-error";
 import { DocumentEntityValidator } from "../validators/document-entity.validator";
 import { FieldStyle, ValidationType } from "../enumerations";
 var Promise = require("bluebird");
@@ -41,7 +41,7 @@ export class DocumentEntityController extends BaseController<IDocumentEntity> {
         });
     }
 
-    public isValid(model: IDocumentEntity): ValidationError[] {
+    public isValid(model: IDocumentEntity): IValidationError[] {
         return DocumentEntityValidator.isValid(model);
     }
 

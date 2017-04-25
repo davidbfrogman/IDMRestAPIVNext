@@ -1,11 +1,11 @@
 import { IDocumentEntity } from "../models/document-entity";
-import { ValidationError } from "../models/validation-error";
+import { IValidationError } from "../models/validation-error";
 import { FieldValidator } from "./field.validator";
 
 export class DocumentEntityValidator {
 
-    public static isValid(document: IDocumentEntity): ValidationError[] {
-        let validationErrors = new Array<ValidationError>();
+    public static isValid(document: IDocumentEntity): IValidationError[] {
+        let validationErrors = new Array<IValidationError>();
 
         // Validate Data Table column length matches
         if (document.dataTables) {
