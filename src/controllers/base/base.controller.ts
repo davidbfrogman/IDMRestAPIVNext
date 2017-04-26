@@ -4,6 +4,7 @@ import { SearchCriteria } from '../../models/search-criteria';
 import * as log from 'winston';
 import { IValidationError } from "../../models/validation-error";
 import { BulkUpdateSummary } from "../../bulk-update-summary";
+import { ObjectId } from "@types/bson";
 var Promise = require("bluebird");
 
 export abstract class BaseController<IMongooseDocument extends Document>{
@@ -170,31 +171,43 @@ export abstract class BaseController<IMongooseDocument extends Document>{
       });
   }
 
+  // We need to seperate the put body into 2 parts.
+  // The put body will contain a query property, and a updateDocument property which will contain the fields to update.
+  // First we find the documents. 
+  // TODO this isn't quite right, because if we just update the fields, we're not actually 
+  // running all the validation logic we need to.  Really we need to 
+  // 1. get the document before update
+  // 2. apply the updates
+  // 3. run the validation
+  // 4. if validation passes, do a real update to the db.
+  // 5. if validation fails return validation failures.
   public bulkUpdate(request: Request, response: Response, next: NextFunction): Promise<BulkUpdateSummary> {
-    // We need to seperate the put body into 2 parts.
-    // The put body will contain a query property, and a updateDocument property which will contain the fields to update.
-    // First we find the documents. 
+
     let bulkUpdateSummary: BulkUpdateSummary = {
       totalItemsUpdated: 0,
-      validationErrors: new Array<IValidationError>()
+      validationErrors: new Array<IValidationError>(),
+      itemIdsUpdated: new Array<ObjectId>(),
+      itemIdsFailed: new Array<ObjectId>()
     }
 
     return this.mongooseModelInstance.find(request.body['query']).then((items) => {
 
       for (var index = 0; index < items.length; index++) {
         var item = items[index];
-
+        item._id
         this.preUpdateHook(item, request).then((itemAfterUpdateHook) => {
 
           let validationErrors = this.isValid(itemAfterUpdateHook);
           if (validationErrors && validationErrors.length > 0) {
             bulkUpdateSummary.validationErrors = bulkUpdateSummary.validationErrors.concat(validationErrors);
+            bulkUpdateSummary.itemIdsFailed.push(itemAfterUpdateHook._id);
             return;
           }
 
           this.mongooseModelInstance.findByIdAndUpdate(item._id, itemAfterUpdateHook).then((updatedItem) => {
 
             bulkUpdateSummary.totalItemsUpdated = bulkUpdateSummary.totalItemsUpdated++;
+            bulkUpdateSummary.itemIdsUpdated.push(itemAfterUpdateHook._id);
 
           }).catch((error) => {
             next(error);
