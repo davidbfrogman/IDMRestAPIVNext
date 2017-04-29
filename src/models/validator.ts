@@ -12,7 +12,7 @@ export interface IValidator extends Document {
 }
 
 export const ValidatorSchema = new Schema({
-    validationType: { type: Number, enum: [EnumHelper.GetValuesFromEnum(ValidationType)] },
+    validationType: { type: Number, enum: [EnumHelper.getValuesFromEnum(ValidationType)] },
     min: { type: Number },
     max: { type: Number },
     regex: { type: String },

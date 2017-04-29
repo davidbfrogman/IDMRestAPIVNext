@@ -15,7 +15,7 @@ export enum FieldStyle {
 
 
 export class EnumHelper {
-    public static GetValuesFromEnum<E>(e: E): Array<Number> {
+    public static getValuesFromEnum<E>(e: E): Array<Number> {
         let keys = Object.keys(e);
         let enumValues = new Array<Number>();
         keys.forEach(key => {

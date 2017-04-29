@@ -24,10 +24,6 @@ export abstract class BaseController<IMongooseDocument extends Document>{
     return Promise.resolve(model);
   }
 
-  public preListHook(models: IMongooseDocument[]): Promise<IMongooseDocument[]> {
-    return Promise.resolve(models);
-  }
-
   public getId(request: Request): string {
     return request && request.params ? request.params['id'] : null;
   }
@@ -42,20 +38,14 @@ export abstract class BaseController<IMongooseDocument extends Document>{
 
     query = this.defaultPopulationArgument ? query.populate(this.defaultPopulationArgument) : query;
 
-    return query.exec((listedItems: IMongooseDocument[]) => {
+    return query.then((listedItems: IMongooseDocument[]) => {
+      response.json(listedItems);
 
-      this.preListHook(listedItems)
-        .then((itemsAfterPreListHook) => {
+      log.info(`Executed List Operation: ${this.mongooseModelInstance.collection.name}, Count: ${listedItems.length}`);
 
-          response.json(itemsAfterPreListHook);
+      return listedItems;
 
-          log.info(`Executed List Operation: ${this.mongooseModelInstance.collection.name}, Count: ${itemsAfterPreListHook.length}`);
-
-          return itemsAfterPreListHook;
-        })
-        .catch((error) => { next(error); });
-    })
-      .catch((error) => { next(error); });
+    }).catch((error) => { next(error); });
   }
 
   public single(request: Request, response: Response, next: NextFunction): Promise<IMongooseDocument> {
@@ -66,11 +56,7 @@ export abstract class BaseController<IMongooseDocument extends Document>{
     query = this.defaultPopulationArgument ? query.populate(this.defaultPopulationArgument) : query;
 
     return query.then((item) => {
-      if (!item) {
-        let error = new Error('Item Not Found');
-        error['status'] = 404;
-        throw (error);
-      }
+      if (!item) { throw ({ message: 'Item Not Found', status: 404 }) }
 
       response.json(item);
       log.info(`Executed Single Operation: ${this.mongooseModelInstance.collection.name}, item._id: ${item._id}`);
@@ -118,7 +104,7 @@ export abstract class BaseController<IMongooseDocument extends Document>{
       itemAfterPreCreateHook.save()
         .then((savedItem: IMongooseDocument) => {
 
-          response.json({ savedItem });
+          response.status(201).json({ savedItem });
 
           log.info(`Created New: ${this.mongooseModelInstance.collection.name}, ID: ${savedItem._id}`);
           return savedItem;
@@ -157,7 +143,7 @@ export abstract class BaseController<IMongooseDocument extends Document>{
               throw (error);
             }
 
-            response.json(updatedItem);
+            response.status(202).json(updatedItem);
 
             log.info(`Updated a: ${this.mongooseModelInstance.collection.name}, ID: ${updatedItem._id}`);
             return updatedItem;
@@ -190,42 +176,48 @@ export abstract class BaseController<IMongooseDocument extends Document>{
       itemIdsFailed: new Array<ObjectId>()
     }
 
-    return this.mongooseModelInstance.find(request.body['query']).then((items) => {
+    if (request.body['query'] && request.body['updateDocument']) {
 
-      for (var index = 0; index < items.length; index++) {
-        var item = items[index];
-        item._id
-        this.preUpdateHook(item, request).then((itemAfterUpdateHook) => {
+      return this.mongooseModelInstance.find(request.body['query']).then((items) => {
 
-          let validationErrors = this.isValid(itemAfterUpdateHook);
-          if (validationErrors && validationErrors.length > 0) {
-            bulkUpdateSummary.validationErrors = bulkUpdateSummary.validationErrors.concat(validationErrors);
-            bulkUpdateSummary.itemIdsFailed.push(itemAfterUpdateHook._id);
-            return;
-          }
+        for (var index = 0; index < items.length; index++) {
+          var item = items[index];
+          item._id
+          this.preUpdateHook(item, request.body['updateDocument']).then((itemAfterUpdateHook) => {
 
-          this.mongooseModelInstance.findByIdAndUpdate(item._id, itemAfterUpdateHook).then((updatedItem) => {
+            let validationErrors = this.isValid(itemAfterUpdateHook);
+            if (validationErrors && validationErrors.length > 0) {
+              bulkUpdateSummary.validationErrors = bulkUpdateSummary.validationErrors.concat(validationErrors);
+              bulkUpdateSummary.itemIdsFailed.push(itemAfterUpdateHook._id);
+            }
+            else {
+              this.mongooseModelInstance.findByIdAndUpdate(item._id, itemAfterUpdateHook).then((updatedItem) => {
 
-            bulkUpdateSummary.totalItemsUpdated = bulkUpdateSummary.totalItemsUpdated++;
-            bulkUpdateSummary.itemIdsUpdated.push(itemAfterUpdateHook._id);
+                bulkUpdateSummary.totalItemsUpdated = bulkUpdateSummary.totalItemsUpdated++;
+                bulkUpdateSummary.itemIdsUpdated.push(itemAfterUpdateHook._id);
 
+              }).catch((error) => {
+                next(error);
+              });
+            }
           }).catch((error) => {
             next(error);
           });
-        }).catch((error) => {
-          next(error);
-        });
-      }
-      response.json(bulkUpdateSummary);
+        }
+        response.status(202).json(bulkUpdateSummary);
 
-      log.info(`Bulk Update Command Issued on: ${this.mongooseModelInstance.collection.name}, 
-      Validation Error Count: ${bulkUpdateSummary.validationErrors ? bulkUpdateSummary.validationErrors.length : 0}
-      Total Items Updated Count:  ${bulkUpdateSummary.totalItemsUpdated}`);
+        log.info(`Bulk Update Command Issued on: ${this.mongooseModelInstance.collection.name}, 
+                  Validation Error Count: ${bulkUpdateSummary.validationErrors ? bulkUpdateSummary.validationErrors.length : 0}
+                  Total Items Updated Count:  ${bulkUpdateSummary.totalItemsUpdated}`);
 
-      return bulkUpdateSummary;
-    }).catch((error) => {
-      next(error);
-    });
+        return bulkUpdateSummary;
+      }).catch((error) => {
+        next(error);
+      });
+    }
+    else {
+      next(new Error('Both a query, and a updateDocument are required for a bulk update operation'));
+    }
   }
 
   public destroy(request: Request, response: Response, next: NextFunction): Promise<IMongooseDocument> {
@@ -272,13 +264,16 @@ export abstract class BaseController<IMongooseDocument extends Document>{
   }
 
   public query(request: Request, response: Response, next: NextFunction): Promise<IMongooseDocument[]> {
+    this.recursivlyConvertRegexes(request.body)
     let query = this.mongooseModelInstance.find(request.body);
+    //query.find({"fields": { "$elemMatch": { "name": "Invoice Name", "stringValue": { $regex: /ax/i, $options:"i" }  }}});
+    //let query = this.mongooseModelInstance.find({"description": { "$regex":  new RegExp('new','i') }}); 
 
     query = this.defaultPopulationArgument ? query.populate(this.defaultPopulationArgument) : query;
 
     return query.then((items: IMongooseDocument[]) => {
 
-      response.json({ items });
+      response.json(items);
 
       log.info(`Queried for: ${this.mongooseModelInstance.collection.name}, Found: ${items.length}`);
       return items;
@@ -287,9 +282,31 @@ export abstract class BaseController<IMongooseDocument extends Document>{
   }
 
   public respondWithValidationErrors(request: Request, response: Response, next: NextFunction, validationErrors: IValidationError[]): void {
-    response.json({
+    response.status(412).json({
       ValidationError: "Your Item did not pass validation",
       ValidationErrors: validationErrors
     });
+  }
+
+  public recursivlyConvertRegexes(requestBody: any) {
+    if (requestBody instanceof Array) {
+      for (var i = 0; i < requestBody.length; ++i) {
+        this.recursivlyConvertRegexes(requestBody[i])
+      }
+    }
+    let keysArray = Object.keys(requestBody);
+    for (var index = 0; index < keysArray.length; index++) {
+      var currentKey = keysArray[index];
+      var element = requestBody[currentKey];
+      if ((element instanceof Object || element instanceof Array) && Object.keys(element).length > 0) {
+        this.recursivlyConvertRegexes(element);
+      }
+      else {
+        if (currentKey === "$regex") {
+          requestBody[currentKey] = new RegExp(requestBody[currentKey], 'i');
+          return;
+        }
+      }
+    }
   }
 }

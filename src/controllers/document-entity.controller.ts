@@ -46,32 +46,48 @@ export class DocumentEntityController extends BaseController<IDocumentEntity> {
     }
 
     public utility(request: Request, response: Response, next: NextFunction): void {
-        EnterpriseEnumerationComposite.findById('58fb3e868280782334460839').exec().then((foundEnum) => {
+        EnterpriseEnumerationComposite.findById('58fc98cc4f87e25f4c76174e').exec().then((foundEnum) => {
             let selectedEnumeration = new SelectedEnumerationComposite();
             selectedEnumeration.selectedValue = foundEnum.enumerationValues[1].value
             selectedEnumeration.fromEnumeration = foundEnum;
             let fields = new Array<IField>();
 
             let Invoicefield = new FieldComposite();
-            Invoicefield.name = "Invoice Number";
-            Invoicefield.description = "The invoice number for an invoice";
-            Invoicefield.tooltip = "This is the fancy invoice number";
-            Invoicefield.fieldStyle = FieldStyle.Number;
-            Invoicefield.value = "12356";
+            Invoicefield.name = "Invoice Name";
+            Invoicefield.description = "The invoice Name for an invoice";
+            Invoicefield.tooltip = "This is the fancy invoice Name";
+            Invoicefield.fieldStyle = FieldStyle.String;
+            Invoicefield.stringValue = "AX1287";
+            fields.push(Invoicefield);
 
             let InvoiceTotal = new FieldComposite();
             InvoiceTotal.name = "Invoice Total";
             InvoiceTotal.description = "The total on the invoice";
             InvoiceTotal.tooltip = "A total across the invoice";
             InvoiceTotal.fieldStyle = FieldStyle.Number;
-            InvoiceTotal.value = "456798.54";
-
-            fields.push(Invoicefield);
+            InvoiceTotal.numberValue = 456798.54;
             fields.push(InvoiceTotal);
+
+            let invoiceShipped = new FieldComposite();
+            invoiceShipped.name = "Is Invoice Shipped";
+            invoiceShipped.description = "Has it been shipped";
+            invoiceShipped.fieldStyle = FieldStyle.Boolean;
+            invoiceShipped.booleanValue = false;
+            fields.push(invoiceShipped);
+           
+            let invoiceShipDate = new FieldComposite();
+            invoiceShipDate.name = "Date the invoice was shipped";
+            invoiceShipDate.description = "Shipping Date";
+            invoiceShipDate.fieldStyle = FieldStyle.Date;
+            invoiceShipDate.dateValue = new Date();
+            fields.push(invoiceShipDate);
 
             let bearDataTable = new DataTableComposite();
             let bearNameColumn = new ColumnComposite();
             let bearWeightColumn = new ColumnComposite();
+            let bearSuperStarColumn = new ColumnComposite();
+            let bearBirthDate = new ColumnComposite();
+
             let validator = new ValidatorComposite();
             validator.validationType = ValidationType.Required
             validator.min = 0;
@@ -81,7 +97,7 @@ export class DocumentEntityController extends BaseController<IDocumentEntity> {
             bearNameColumn.tooltip = "Enter a name for your bear";
             bearNameColumn.description = "Every Bear needs a name";
             bearNameColumn.fieldStyle = FieldStyle.String;
-            bearNameColumn.values = ["Smokey", "Boo-Boo", "Sleepy"];
+            bearNameColumn.stringValues = ["Smokey", "Boo-Boo", "Sleepy"];
             bearNameColumn.validators.push(validator);
             bearDataTable.columns.push(bearNameColumn);
 
@@ -89,9 +105,25 @@ export class DocumentEntityController extends BaseController<IDocumentEntity> {
             bearWeightColumn.tooltip = "A weight is important";
             bearWeightColumn.description = "Every Bear needs a Weight";
             bearWeightColumn.fieldStyle = FieldStyle.Number;
-            bearWeightColumn.values = ["200.2", "54.4", "82.9"];
+            bearWeightColumn.numberValues = [200.2, 54.4, 82.9];
             bearWeightColumn.validators.push(validator);
             bearDataTable.columns.push(bearWeightColumn);
+
+            bearSuperStarColumn.name = "Is Super Star";
+            bearSuperStarColumn.tooltip = "How many shows has he done";
+            bearSuperStarColumn.description = "Gotta love super stars";
+            bearSuperStarColumn.fieldStyle = FieldStyle.Boolean;
+            bearSuperStarColumn.booleanValues = [true, false, false];
+            bearSuperStarColumn.validators.push(validator);
+            bearDataTable.columns.push(bearSuperStarColumn);
+
+            bearBirthDate.name = "Birthday";
+            bearBirthDate.tooltip = "Baloons all around";
+            bearBirthDate.description = "Birthday time!";
+            bearBirthDate.fieldStyle = FieldStyle.Date;
+            bearBirthDate.dateValues = [new Date(),new Date(), new Date()];
+            bearBirthDate.validators.push(validator);
+            bearDataTable.columns.push(bearBirthDate);
 
             let edc = new DocumentEntityComposite();
             edc.name = "New Document";

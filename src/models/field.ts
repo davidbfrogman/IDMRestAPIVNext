@@ -9,16 +9,22 @@ export interface IField extends Document {
     tooltip?: string;
     fieldStyle: FieldStyle;
     validators?: Array<IValidator>;
-    value: string;
+    stringValue: string;
+    numberValue: number;
+    dateValue: Date;
+    booleanValue: boolean;
 }
 
 export const FieldSchema = new Schema({
     name: { type: String },
     description: { type: String },
     tooltip: { type: String },
-    fieldStyle: { type: Number, enum: [EnumHelper.GetValuesFromEnum(FieldStyle)] },
+    fieldStyle: { type: Number, enum: [EnumHelper.getValuesFromEnum(FieldStyle)] },
     validators: [ValidatorSchema],
-    value: { type: String }
+    stringValue: { type: String },
+    numberValue: { type: Number },
+    dateValue: { type: Date },
+    booleanValue: { type: Boolean }
 }, { timestamps: false, _id: false });
 
 //If you do any pre save methods, and you use fat arrow syntax 'this' doesn't refer to the document.
