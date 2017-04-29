@@ -10,7 +10,7 @@ const jwt = require('jsonwebtoken');
 
 export class AuthenticationController extends BaseController<IUserComposite> {
 
-    private saltRounds: Number = 10;
+    private saltRounds: Number = 5;
     private tokenExpiration: String = '1d';
     public defaultPopulationArgument = null;
 
