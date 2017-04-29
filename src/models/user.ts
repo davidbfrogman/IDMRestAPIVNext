@@ -9,6 +9,9 @@ export interface IUser extends Document {
     email: string;
     roles: Array<IRole>;
     href: string;
+    // This will be set to true whenever a user changes their password / or we require them to login again
+    // This is used by the authentication controller to revoke the renewal of a token.  
+    isTokenExpired: boolean; 
     createdAt?: Date; //Automatically created by mongoose.
     modifiedAt?: Date; //Automatically created by mongoose.
 }
@@ -21,6 +24,7 @@ const UserSchema = new Schema({
         required:true
     },
     passwordHash: {type: String, required: true, select: false},
+    isTokenExpired: {type : Boolean, required: true, default: true},
     href: {type:String},
     email: {type:String, unique:true},
     roles: [{ type : Schema.Types.ObjectId, ref: 'role' }]
