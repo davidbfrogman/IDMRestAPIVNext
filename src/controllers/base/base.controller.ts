@@ -117,14 +117,14 @@ export abstract class BaseController<IMongooseDocument extends Document>{
   // For now update full/partial do exactly the same thing, whenever we want to break out
   // patch, we can do that.
   public updateFull(request: Request, response: Response, next: NextFunction): Promise<IMongooseDocument> {
-    return this.update(request, response, next);
+    return this.update(request, response, next,true);
   }
 
   public updatePartial(request: Request, response: Response, next: NextFunction): Promise<IMongooseDocument> {
-    return this.update(request, response, next);
+    return this.update(request, response, next,false);
   }
 
-  private update(request: Request, response: Response, next: NextFunction): Promise<IMongooseDocument> {
+  private update(request: Request, response: Response, next: NextFunction, isFull: boolean): Promise<IMongooseDocument> {
     return this.preUpdateHook(new this.mongooseModelInstance(request.body), request)
       .then((itemAfterUpdateHook) => {
         let validationErrors = this.isValid(itemAfterUpdateHook);
@@ -133,9 +133,20 @@ export abstract class BaseController<IMongooseDocument extends Document>{
           return null;
         }
 
+        // notice that we're using the request body in the set operation NOT the item after the pre update hook.
+        let updateBody: any;
+        if (isFull) {
+          // here we have a full document, so we don't need the set operation
+          updateBody = itemAfterUpdateHook; 
+        }
+        else {
+          // here someone only passed in a few fields, so we use the set operation to only change the fields that were passed in.
+          updateBody = { $set: request.body }
+        }
+
         this.mongooseModelInstance
-          // New True means to return the newly updated object. (nothing to do with creating a new item)
-          .findByIdAndUpdate(this.getId(request), itemAfterUpdateHook, { new: true })
+          // new:true means to return the newly updated object. (nothing to do with creating a new item)
+          .findByIdAndUpdate(this.getId(request), updateBody, { new: true })
           .then((updatedItem: IMongooseDocument) => {
             if (!updatedItem) {
               let error = new Error('Item Not Found');

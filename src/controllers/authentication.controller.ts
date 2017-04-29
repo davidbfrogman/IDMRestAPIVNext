@@ -26,8 +26,14 @@ export class AuthenticationController extends BaseController<IUserComposite> {
             })
             .select('+passwordHash')
             .then((user) => {
-                bcrypt.hash(request.body.passwordHash, this.saltRounds, (err, hash) => {
-                    if (user.passwordHash !== hash) {
+                bcrypt.compare(request.body.passwordHash, user.passwordHash, (err, res) => {
+                    if(err){
+                        response.status(401).json({
+                            message: 'Authentication Failed',
+                            error: err
+                        })
+                    }
+                    if (res === false) {
                         response.status(401).json({
                             message: 'Authentication Failed',
                             description: 'Password does not match'
