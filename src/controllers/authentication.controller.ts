@@ -21,26 +21,18 @@ export class AuthenticationController extends BaseController<IUserComposite> {
     }
 
     public authenticate(request: Request, response: Response, next: NextFunction): Promise<any> {
-        return this.mongooseModelInstance
-            .findOne({
-                username: request.body.username
-            })
+        return this.mongooseModelInstance.findOne({ username: request.body.username })
             .select('+passwordHash')
             .then((user) => {
                 bcrypt.compare(request.body.passwordHash, user.passwordHash, (err, res) => {
                     if (err) {
-                        response.status(401).json({
-                            message: 'Authentication Failed',
-                            error: err
-                        })
+                        this.sendAuthFailure(response, 401, err);
                     }
                     if (res === false) {
-                        response.status(401).json({
-                            message: 'Authentication Failed',
-                            description: 'Password does not match'
-                        })
+                        this.sendAuthFailure(response, 401, 'Password does not match');
                     }
                     else {
+
                         let tokenPayload: ITokenPayload = {
                             userId: user._id,
                             expiration: this.tokenExpiration
@@ -58,9 +50,6 @@ export class AuthenticationController extends BaseController<IUserComposite> {
                         });
                     }
                 });
-                //hash the password we recieved from the body
-
-
             })
             .catch((error) => { next(error); });
     }
@@ -79,18 +68,12 @@ export class AuthenticationController extends BaseController<IUserComposite> {
             // verifies secret and checks exp
             jwt.verify(token, config.devConfig.jwtSecretToken, (err, decodedToken: ITokenPayload) => {
                 if (err) {
-                    response.status(401).json({
-                        message: 'Authentication Failed',
-                        description: 'Failed to authenticate token. The timer *may* have expired on this token.'
-                    });
+                    this.sendAuthFailure(response, 401, 'Failed to authenticate token. The timer *may* have expired on this token.');
                 } else {
                     //get the user from the database, and verify that they don't need to re login
                     this.mongooseModelInstance.findById(decodedToken.userId).then((user) => {
                         if (user.isTokenExpired) {
-                            response.status(401).json({
-                                message: 'Authentication Failed',
-                                description: 'The user must login again to refresh their credentials'
-                            });
+                            this.sendAuthFailure(response, 401, 'The user must login again to refresh their credentials');
                         }
                         else {
 
@@ -116,10 +99,7 @@ export class AuthenticationController extends BaseController<IUserComposite> {
         }
         else {
             // If we don't have a token, return a failure
-            response.status(403).json({
-                message: 'Token refresh failed',
-                description: 'No Authentication Token Provided'
-            });
+            this.sendAuthFailure(response, 403, 'No Authentication Token Provided');
         }
     }
 
@@ -129,12 +109,9 @@ export class AuthenticationController extends BaseController<IUserComposite> {
         // decode token
         if (token) {
             // verifies secret and checks exp
-            jwt.verify(token, config.devConfig.jwtSecretToken, (err, decodedToken)=> {
+            jwt.verify(token, config.devConfig.jwtSecretToken, (err, decodedToken) => {
                 if (err) {
-                    return response.status(401).json({
-                        message: 'Authentication Failed',
-                        description: 'Failed to authenticate token. The timer *may* have expired on this token.'
-                    });
+                    return this.sendAuthFailure(response, 401, 'Failed to authenticate token. The timer *may* have expired on this token.');
                 } else {
                     // if everything is good, save to request for use in other routes
                     request['decodedToken'] = decodedToken;
@@ -142,13 +119,15 @@ export class AuthenticationController extends BaseController<IUserComposite> {
                 }
             });
         } else {
-            // if there is no token
-            // return an error
-            return response.status(403).json({
-                message: 'Authentication Failed',
-                description: 'No Authentication Token Provided'
-            });
-
+            //No token, send auth failure
+            return this.sendAuthFailure(response, 403, 'No Authentication Token Provided');
         }
+    }
+
+    public sendAuthFailure(response: Response, status: number, description: string): Response {
+        return response.status(status).json({
+            message: 'Authentication Failed',
+            description: description
+        });
     }
 }
