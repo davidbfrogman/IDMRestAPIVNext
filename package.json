@@ -23,6 +23,7 @@
     "compression": "^1.6.2",
     "express": "^4.15.2",
     "fs": "0.0.1-security",
+    "jackrabbit": "^4.3.0",
     "jsonwebtoken": "^7.3.0",
     "method-override": "^2.3.8",
     "moment": "^2.18.1",

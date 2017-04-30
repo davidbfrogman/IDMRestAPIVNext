@@ -100,8 +100,15 @@ log.info(`Listening on http://localhost:${port}`);
 // if needed you can add .catch(()=>{}) which will completely swallow the unhandled promise rejection.  This felt dirty. 
 // This will prevent the server from becoming unstable.  Error happens, it's caught here, and server still runs.
 process.on('unhandledRejection', (reason, p) => {
-    //log.info('Unhandled Promise Rejection Promise Location: ', p);
-    log.info('Unhandled Promise Rejection - Could Be Dangerous See server.js for more details \n Promise Rejection Reason:', reason);
+    log.error('Unhandled Promise Rejection - Could Be Dangerous See server.js for more details \n Promise Rejection Reason:', reason);
+});
+
+process.on('uncaughtException', (error)=> {
+      log.error('Uncaught exception was not handled by code base, server restarting to maintain stability:', error);
+      log.error('Uncaught exception StackTrace:', error.stack);
+      // Because we should be running with forever or nodemon, we can exit the process, and they will restart for us.
+      // If you don't exit the process, you leave the app in an inconsistent state, with no idea what might happen.
+      process.exit(1);
 });
 
 export { server };
