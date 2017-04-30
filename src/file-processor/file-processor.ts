@@ -10,7 +10,7 @@ queue.consume((file: IFile, ack) => {
         ack();
     }
     catch (error) {
-        //nack(); //TODO how do we 'nack' here?
+        queue.nack();
         log.error(`There was an error processing queue data:${error}`);
     }
 });
