@@ -9,6 +9,9 @@
   },
   "scripts": {
     "build": "gulp build",
+    "watch": "gulp watch",
+    "api": "nodemon dist/server.js",
+    "fp": "nodemon dist/file-processor/file-processor.js",
     "test": "mocha --opts mocha.config",
     "test:auto": "mocha --opts mocha.config --watch"
   },
@@ -67,6 +70,7 @@
     "tslint": "^5.1.0",
     "typescript": "^2.3.0",
     "vinyl-paths": "^2.1.0",
+    "wrk": "^1.1.0",
     "zone.js": "^0.8.5"
   }
 }

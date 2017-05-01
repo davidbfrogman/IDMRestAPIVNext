@@ -3,7 +3,7 @@ import { Router, Request, Response, RequestParamHandler, NextFunction, RequestHa
 import mongoose = require('mongoose');
 import { Schema, Model, Document } from 'mongoose';
 import { BaseController } from './base/base.controller';
-import { config } from '../config/config';
+import { Config } from '../config/config';
 import { ITokenPayload } from "../models/token-payload";
 
 const bcrypt = require('bcrypt');
@@ -38,7 +38,7 @@ export class AuthenticationController extends BaseController<IUserComposite> {
                             expiration: this.tokenExpiration
                         };
 
-                        let token = jwt.sign(tokenPayload, config.devConfig.jwtSecretToken, {
+                        let token = jwt.sign(tokenPayload, Config.currentConfig().jwtSecretToken, {
                             expiresIn: tokenPayload.expiration
                         });
 
@@ -66,7 +66,7 @@ export class AuthenticationController extends BaseController<IUserComposite> {
         // decode token
         if (token) {
             // verifies secret and checks exp
-            jwt.verify(token, config.devConfig.jwtSecretToken, (err, decodedToken: ITokenPayload) => {
+            jwt.verify(token, Config.currentConfig().jwtSecretToken, (err, decodedToken: ITokenPayload) => {
                 if (err) {
                     this.sendAuthFailure(response, 401, 'Failed to authenticate token. The timer *may* have expired on this token.');
                 } else {
@@ -82,7 +82,7 @@ export class AuthenticationController extends BaseController<IUserComposite> {
                                 expiration: this.tokenExpiration
                             };
 
-                            let newToken = jwt.sign(tokenPayload, config.devConfig.jwtSecretToken, {
+                            let newToken = jwt.sign(tokenPayload, Config.currentConfig().jwtSecretToken, {
                                 expiresIn: tokenPayload.expiration
                             });
 
@@ -109,7 +109,7 @@ export class AuthenticationController extends BaseController<IUserComposite> {
         // decode token
         if (token) {
             // verifies secret and checks exp
-            jwt.verify(token, config.devConfig.jwtSecretToken, (err, decodedToken) => {
+            jwt.verify(token, Config.currentConfig().jwtSecretToken, (err, decodedToken) => {
                 if (err) {
                     return this.sendAuthFailure(response, 401, 'Failed to authenticate token. The timer *may* have expired on this token.');
                 } else {

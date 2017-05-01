@@ -14,7 +14,7 @@ import log = require('winston');
 import { DocumentTemplateRouter } from './routes/document-template.router';
 import { ApiErrorHandler } from './api-error-handler';
 import { UserRouter } from './routes/user.router';
-import { config } from './config/config';
+import { Config } from './config/config';
 import { AuthenticationRouter } from './routes/authentication.router';
 import { Router } from 'express';
 import { RoleRouter } from "./routes/role.router";
@@ -23,17 +23,24 @@ import { DocumentEntityRouter } from "./routes/document-entity.router";
 import { EnterpriseEnumerationRouter } from "./routes/enterprise-enumeration.router";
 import { Constants } from "./constants";
 
-log.remove(log.transports.Console);
-log.add(log.transports.Console, { colorize: true });
-
-const port = config.devConfig.port;        // set our port
 
 log.info('Starting up Express Server.');
 const app: express.Application = express();
 
+if(Config.currentConfig().isConsoleLoggingActive){
+    log.remove(log.transports.Console);
+    log.add(log.transports.Console, { colorize: true });
+    app.use(morgan('dev')); //Using morgan middleware for logging all requests.
+}
+else{
+    log.remove(log.transports.Console);
+}
+
+const port = Config.currentConfig().port;        // set our port
+
 // Authentication========================================================
 const jwt = require('jsonwebtoken'); // used to create, sign, and verify tokens
-app.set('jwtSecretToken', config.devConfig.jwtSecretToken);
+app.set('jwtSecretToken', Config.currentConfig().jwtSecretToken);
 
 // Middleware ==========================================================
 log.info('Initializing Middleware');
@@ -51,7 +58,7 @@ app.use(methodOverride(function (req) {
 }));
 // compress all requests
 app.use(compression());
-app.use(morgan('dev')); //Using morgan middleware for logging all requests.
+
 
 // Routers =============================================================
 log.info('Initializing Routers');

@@ -101,7 +101,7 @@ export abstract class BaseController<IMongooseDocument extends Document>{
         return null;
       }
 
-      itemAfterPreCreateHook.save()
+      return itemAfterPreCreateHook.save()
         .then((savedItem: IMongooseDocument) => {
 
           response.status(201).json({ savedItem });
@@ -117,11 +117,11 @@ export abstract class BaseController<IMongooseDocument extends Document>{
   // For now update full/partial do exactly the same thing, whenever we want to break out
   // patch, we can do that.
   public updateFull(request: Request, response: Response, next: NextFunction): Promise<IMongooseDocument> {
-    return this.update(request, response, next,true);
+    return this.update(request, response, next, true);
   }
 
   public updatePartial(request: Request, response: Response, next: NextFunction): Promise<IMongooseDocument> {
-    return this.update(request, response, next,false);
+    return this.update(request, response, next, false);
   }
 
   private update(request: Request, response: Response, next: NextFunction, isFull: boolean): Promise<IMongooseDocument> {
@@ -137,14 +137,14 @@ export abstract class BaseController<IMongooseDocument extends Document>{
         let updateBody: any;
         if (isFull) {
           // here we have a full document, so we don't need the set operation
-          updateBody = itemAfterUpdateHook; 
+          updateBody = itemAfterUpdateHook;
         }
         else {
           // here someone only passed in a few fields, so we use the set operation to only change the fields that were passed in.
           updateBody = { $set: request.body }
         }
 
-        this.mongooseModelInstance
+        return this.mongooseModelInstance
           // new:true means to return the newly updated object. (nothing to do with creating a new item)
           .findByIdAndUpdate(this.getId(request), updateBody, { new: true })
           .then((updatedItem: IMongooseDocument) => {
@@ -193,28 +193,26 @@ export abstract class BaseController<IMongooseDocument extends Document>{
 
         for (var index = 0; index < items.length; index++) {
           var item = items[index];
-          item._id
-          this.preUpdateHook(item, request.body['updateDocument']).then((itemAfterUpdateHook) => {
+          
+          this.preUpdateHook(item, request.body['updateDocument'])
+            .then((itemAfterUpdateHook) => {
 
-            let validationErrors = this.isValid(itemAfterUpdateHook);
-            if (validationErrors && validationErrors.length > 0) {
-              bulkUpdateSummary.validationErrors = bulkUpdateSummary.validationErrors.concat(validationErrors);
-              bulkUpdateSummary.itemIdsFailed.push(itemAfterUpdateHook._id);
-            }
-            else {
-              this.mongooseModelInstance.findByIdAndUpdate(item._id, itemAfterUpdateHook).then((updatedItem) => {
+              let validationErrors = this.isValid(itemAfterUpdateHook);
+              if (validationErrors && validationErrors.length > 0) {
+                bulkUpdateSummary.validationErrors = bulkUpdateSummary.validationErrors.concat(validationErrors);
+                bulkUpdateSummary.itemIdsFailed.push(itemAfterUpdateHook._id);
+              }
+              else {
+                return this.mongooseModelInstance.findByIdAndUpdate(item._id, itemAfterUpdateHook).then((updatedItem) => {
 
-                bulkUpdateSummary.totalItemsUpdated = bulkUpdateSummary.totalItemsUpdated++;
-                bulkUpdateSummary.itemIdsUpdated.push(itemAfterUpdateHook._id);
+                  bulkUpdateSummary.totalItemsUpdated = bulkUpdateSummary.totalItemsUpdated++;
+                  bulkUpdateSummary.itemIdsUpdated.push(itemAfterUpdateHook._id);
 
-              }).catch((error) => {
-                next(error);
-              });
-            }
-          }).catch((error) => {
-            next(error);
-          });
+                }).catch((error) => { next(error); });
+              }
+            }).catch((error) => { next(error); });
         }
+
         response.status(202).json(bulkUpdateSummary);
 
         log.info(`Bulk Update Command Issued on: ${this.mongooseModelInstance.collection.name}, 
@@ -222,12 +220,11 @@ export abstract class BaseController<IMongooseDocument extends Document>{
                   Total Items Updated Count:  ${bulkUpdateSummary.totalItemsUpdated}`);
 
         return bulkUpdateSummary;
-      }).catch((error) => {
-        next(error);
-      });
+
+      }).catch((error) => { next(error); });
     }
     else {
-      next(new Error('Both a query, and a updateDocument are required for a bulk update operation'));
+      next(new Error('Both a query, and a updateDocument are required for a bulk update operation ie: {query: {...}, updateDocument: {...} }'));
     }
   }
 
@@ -239,9 +236,8 @@ export abstract class BaseController<IMongooseDocument extends Document>{
 
     return query.then((deletedItem) => {
       if (!deletedItem) {
-        let error = new Error('Item Not Found');
-        error['status'] = 404;
-        throw (error);
+        response.status(404);
+        throw (new Error('Item Not Found'));
       }
 
       response.json({
@@ -255,11 +251,11 @@ export abstract class BaseController<IMongooseDocument extends Document>{
       .catch((error) => { next(error); });
   }
 
-  public clear(request: Request, response: Response, next: NextFunction): void {
-    this.mongooseModelInstance.count(request.body).exec().then((count) => {
+  public clear(request: Request, response: Response, next: NextFunction): Promise<void> {
+    return this.mongooseModelInstance.count(request.body).exec().then((count) => {
       let query = this.mongooseModelInstance.remove(request.body);
 
-      query.then(() => {
+     return query.then(() => {
         response.json({
           Collection: this.mongooseModelInstance.collection.name,
           Message: "All items cleared from collection",

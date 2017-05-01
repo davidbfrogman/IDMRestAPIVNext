@@ -1,9 +1,9 @@
 import log = require('winston');
-import { config } from './config'
+import { Config } from './config'
 import { Constants } from "../constants";
 
 let jackrabbit = require('jackrabbit');
-let url = process.env.CLOUDAMQP_URL || config.devConfig.AMPQConnectionString;
+let url = Config.currentConfig().AMPQConnectionString;
 
 let rabbit = jackrabbit(url);
 log.info(`Connected to RabbitMQ on url:${url}`);
