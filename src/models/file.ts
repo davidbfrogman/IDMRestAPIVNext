@@ -4,11 +4,21 @@ import { IValidator, ValidatorSchema } from './validator';
 import { FieldStyle, EnumHelper } from '../enumerations';
 import { IField } from "./field";
 
+/*
+name : user entered file name.
+originalname	Name of the file on the user's computer	
+encoding	Encoding type of the file	
+mimetype	Mime type of the file	
+size	Size of the file in bytes	
+filename	The name of the file within the destination	
+*/
 export interface IFile{
     name: string;
     size?: number;
-    mimetype?: string;
+    originalName?: string;
     fileName?: string;
+    mimeType?: string;
+    encoding?: string;
     url?: string;
 	sha256?: string;
     location?: string;
@@ -19,6 +29,8 @@ export const FileSchema = new Schema({
     name: { type: String },
     size: { type: Number },
     mimetype: { type: String },
+    encoding: { type: String },
+    originalName:  { type: String },
     fileName:  { type: String },
     url: { type: String },
     location: { type: String },
