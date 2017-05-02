@@ -4,6 +4,13 @@ export enum ValidationType {
     Regex = 3
 }
 
+export enum ProcessingState{
+    Uploaded = 1,
+    Transforming = 2,
+    Merging = 3,
+    Finished = 4
+}
+
 export enum FieldStyle {
     String = 1,
     Number = 2,

@@ -1,7 +1,7 @@
 import { mongoose } from '../config/database';
 import { Schema, Model, Document } from 'mongoose';
 import { IValidator, ValidatorSchema } from './validator';
-import { FieldStyle, EnumHelper } from '../enumerations';
+import { FieldStyle, EnumHelper, ProcessingState } from '../enumerations';
 import { IField } from "./field";
 
 /*
@@ -12,7 +12,7 @@ mimetype	Mime type of the file
 size	Size of the file in bytes	
 filename	The name of the file within the destination	
 */
-export interface IFile{
+export interface IFile extends Document{
     name: string;
     size?: number;
     originalName?: string;
@@ -22,6 +22,7 @@ export interface IFile{
     url?: string;
 	sha256?: string;
     location?: string;
+    processingState?: ProcessingState;
     isDoneProcessing?: boolean;
 }
 
@@ -35,6 +36,7 @@ export const FileSchema = new Schema({
     url: { type: String },
     location: { type: String },
     sha256:  { type: String },
+    processingState: { type: Number, enum: [EnumHelper.getValuesFromEnum(ProcessingState)], default: 1 },
     isDoneProcessing: {type: Boolean, default: false}
 },{timestamps:true, _id: true});
 

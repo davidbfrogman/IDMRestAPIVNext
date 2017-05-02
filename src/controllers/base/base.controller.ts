@@ -114,8 +114,7 @@ export abstract class BaseController<IMongooseDocument extends Document>{
       .catch((error) => { next(error); });
   }
 
-  // For now update full/partial do exactly the same thing, whenever we want to break out
-  // patch, we can do that.
+  //Update full / partial, is the difference between put and patch.
   public updateFull(request: Request, response: Response, next: NextFunction): Promise<IMongooseDocument> {
     return this.update(request, response, next, true);
   }

@@ -6,6 +6,9 @@ import * as fs from 'fs';
 import { join } from 'path';
 import { json, urlencoded } from 'body-parser';
 import { mongoose } from './config/database';
+import { Constants } from "./constants";
+import { Config } from './config/config';
+import { Router } from 'express';
 import methodOverride = require('method-override');
 import log = require('winston');
 
@@ -14,14 +17,13 @@ import log = require('winston');
 import { DocumentTemplateRouter } from './routes/document-template.router';
 import { ApiErrorHandler } from './api-error-handler';
 import { UserRouter } from './routes/user.router';
-import { Config } from './config/config';
 import { AuthenticationRouter } from './routes/authentication.router';
-import { Router } from 'express';
 import { RoleRouter } from "./routes/role.router";
 import { PermissionRouter } from "./routes/permission.router";
 import { DocumentEntityRouter } from "./routes/document-entity.router";
+import { FileRouter } from "./routes/file.router";
 import { EnterpriseEnumerationRouter } from "./routes/enterprise-enumeration.router";
-import { Constants } from "./constants";
+
 
 
 log.info('Starting up Express Server.');
@@ -69,6 +71,7 @@ app.use('/authenticate', new AuthenticationRouter().getRouter());
 app.use(Constants.APIEndpoint, new DocumentTemplateRouter().getRouter());
 app.use(Constants.APIEndpoint, new DocumentEntityRouter().getRouter());
 app.use(Constants.APIEndpoint, new EnterpriseEnumerationRouter().getRouter());
+app.use(Constants.APIEndpoint, new FileRouter().getRouter());
 app.use(Constants.AdminEndpoint, new UserRouter().getRouter());
 app.use(Constants.AdminEndpoint, new RoleRouter().getRouter());
 app.use(Constants.AdminEndpoint, new PermissionRouter().getRouter());
