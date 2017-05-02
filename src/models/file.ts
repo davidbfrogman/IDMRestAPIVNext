@@ -13,7 +13,7 @@ size	Size of the file in bytes
 filename	The name of the file within the destination	
 */
 export interface IFile extends Document{
-    name: string;
+    name?: string;
     size?: number;
     originalName?: string;
     fileName?: string;

@@ -7,6 +7,7 @@ export const allconfigs = {
         production: false,
         port: process.env.PORT || 8080,
         isConsoleLoggingActive:true,
+        FileUploadPath: '/uploads/',
     },
     unitTesting: {
         mongoConnectionString: process.env.MONGO_CONNECTION_STRING || "mongodb://dbrown:password1@ds157320.mlab.com:57320/idmdocumentdbtesting",
@@ -15,6 +16,7 @@ export const allconfigs = {
         production: false,
         port: process.env.PORT || 8080,
         isConsoleLoggingActive:true,
+        FileUploadPath: '/uploads/',
     },
     prod: {
         mongoConnectionString: process.env.MONGO_CONNECTION_STRING ||  "mongodb://dbrown:password1@ds157320.mlab.com:57320/idmdocumentdb",
@@ -22,7 +24,8 @@ export const allconfigs = {
         jwtSecretToken: 'ry8e0yw7eu653h560tg9970g8ahd*^%$*Ssasdgad8(^&*Fasdf',
         production: true,   
         port: process.env.PORT || 8080,
-        isConsoleLoggingActive:true
+        isConsoleLoggingActive:true,
+        FileUploadPath: '/uploads/',        
     },
 }
 
@@ -48,4 +51,5 @@ export interface IConfigType{
     production: boolean;
     port: number;
     isConsoleLoggingActive: boolean;
+    FileUploadPath: string;
 }
