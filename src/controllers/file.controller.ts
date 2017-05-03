@@ -9,6 +9,7 @@ import * as multer from 'multer';
 import * as fs from 'fs';
 import * as path from 'path';
 import { ProcessingState } from "../enumerations";
+import * as multerTypes from '../customTypes/multer.index';
 
 // var Promise = require("bluebird");
 
