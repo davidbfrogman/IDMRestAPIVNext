@@ -75,8 +75,13 @@ app.use(Constants.APIEndpoint, new FileRouter().getRouter());
 app.use(Constants.AdminEndpoint, new UserRouter().getRouter());
 app.use(Constants.AdminEndpoint, new RoleRouter().getRouter());
 app.use(Constants.AdminEndpoint, new PermissionRouter().getRouter());
+
+
+// Static Serve Locations =========================================================
 app.use(Constants.APIDocsEndpoint, express.static(__dirname + '/swagger/swagger-ui'));
 app.use(Constants.APISwaggerDefinitionEndpoint, express.static(__dirname + '/swagger/'));
+log.info('File Uploads loaded from: ' + __dirname + '/../uploads/' );
+app.use('/uploads', express.static(__dirname + '/../uploads/'));
 
 // Homepage ============================================================
 app.get('/', (request: express.Request, response: express.Response) => {

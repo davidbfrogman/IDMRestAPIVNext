@@ -7,7 +7,7 @@ export const allconfigs = {
         production: false,
         port: process.env.PORT || 8080,
         isConsoleLoggingActive:true,
-        FileUploadPath: '/uploads/',
+        FileUploadPath: './uploads/',
     },
     unitTesting: {
         mongoConnectionString: process.env.MONGO_CONNECTION_STRING || "mongodb://dbrown:password1@ds157320.mlab.com:57320/idmdocumentdbtesting",
@@ -16,7 +16,7 @@ export const allconfigs = {
         production: false,
         port: process.env.PORT || 8080,
         isConsoleLoggingActive:true,
-        FileUploadPath: '/uploads/',
+        FileUploadPath: './uploads/',
     },
     prod: {
         mongoConnectionString: process.env.MONGO_CONNECTION_STRING ||  "mongodb://dbrown:password1@ds157320.mlab.com:57320/idmdocumentdb",
@@ -25,7 +25,7 @@ export const allconfigs = {
         production: true,   
         port: process.env.PORT || 8080,
         isConsoleLoggingActive:true,
-        FileUploadPath: '/uploads/',        
+        FileUploadPath: './uploads/',        
     },
 }
 
