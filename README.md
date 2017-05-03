@@ -46,6 +46,10 @@ load testing with artillery
     artillery quick --duration 60 --rate 100 -n 20 http://localhost:8080/api/enterprise-enumerations
 ```
 
+If you want to actually start using TLS/HTTPS you need to turn on Helmet to prevent a bunch of attacks on the server:
+Uncomment this line in server.ts
+//app.use(helmet()); //Protecting the app from a lot of vulnerabilities turn on when you want to use TLS.
+
 ## URL
 
 *  "DocumentationLocation": [Docs](http://localhost:8080/api-docs)

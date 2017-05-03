@@ -3,6 +3,8 @@ import * as http from 'http';
 import * as compression from 'compression';
 import * as morgan from 'morgan';
 import * as fs from 'fs';
+import * as helmet from 'helmet';
+
 import { join } from 'path';
 import { json, urlencoded } from 'body-parser';
 import { mongoose } from './config/database';
@@ -46,6 +48,8 @@ app.set('jwtSecretToken', Config.currentConfig().jwtSecretToken);
 
 // Middleware ==========================================================
 log.info('Initializing Middleware');
+//app.use(helmet()); //Protecting the app from a lot of vulnerabilities turn on when you want to use TLS.
+app.disable('x-powered-by');
 app.use(json());
 app.use(urlencoded({
     extended: true
@@ -80,7 +84,7 @@ app.use(Constants.AdminEndpoint, new PermissionRouter().getRouter());
 // Static Serve Locations =========================================================
 app.use(Constants.APIDocsEndpoint, express.static(__dirname + '/swagger/swagger-ui'));
 app.use(Constants.APISwaggerDefinitionEndpoint, express.static(__dirname + '/swagger/'));
-log.info('File Uploads loaded from: ' + __dirname + '/../uploads/' );
+// this allows you to see the files uploaded in dev http://localhost:8080/uploads/067e2ad8ca80503b9ae41c9c06855a9a-1afd01789a7015a436d35c6914236865-1493816227467.jpeg
 app.use('/uploads', express.static(__dirname + '/../uploads/'));
 
 // Homepage ============================================================
