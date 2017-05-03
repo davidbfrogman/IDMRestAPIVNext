@@ -11,5 +11,5 @@ export const Constants = {
     RolesEndpoint: "/roles",
     UsersEndpoint: "/users",
     FilesEndpoint: "/files",
-    IDMFileProcessorQ: 'idm-file-processor-q'
+    IDMImageProcessorQ: 'idm-image-processor-q',
 }

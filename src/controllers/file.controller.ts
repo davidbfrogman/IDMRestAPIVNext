@@ -28,7 +28,7 @@ export class FileController extends BaseController<IFileComposite> {
         file.fileName = "test.jpg";
 
         //publish message
-        exchange.publish(file, { key: Constants.IDMFileProcessorQ });
+        exchange.publish(file, { key: Constants.IDMImageProcessorQ });
         response.json({
             message: "We just published a message on the queue"
         });
@@ -37,7 +37,7 @@ export class FileController extends BaseController<IFileComposite> {
 
 
     public uploadFiles(request: Request, response: Response, next: NextFunction): void {
-        //had to change the multer types file.... I have a feeling it might just be easier to delete the types.
+        //this is using custom types that actually match the field name in postman.
         let files = request.files;
         let savedFileDocuments = new Array<IFileComposite>();
         let savePromises = new Array<Promise<IFileComposite>>();
@@ -65,41 +65,16 @@ export class FileController extends BaseController<IFileComposite> {
 
         Promise.all(savePromises).then((files: Array<IFileComposite>) => {
             //push message onto queue
-            files.map((file) => {
-                exchange.publish(file, { key: Constants.IDMFileProcessorQ });
-            });
+            try {
+                files.map((file) => {
+                    exchange.publish(file, { key: Constants.IDMImageProcessorQ });
+                });
 
-            response.status(201).json({ files });
+                response.status(201).json({ files });
+            }
+            catch (error) {
+                next(error);
+            }
         })
     }
-    // filesArray = <Multer.Request.Files>request.files;
-    // log.info(`Files Length: ${request.files.length}`);
-    // for (var index = 0; index < request.files.length; index++) {
-    //     var uploadedFile = request.files[index];
-    //     let file: IFileComposite = {
-    //         name: uploadedFile.name;
-    //         encoding:
-    //     }
-    //     file.name = request.files[0].fileName;
-    //     file.location = "/files/";
-    //     file.fileName = "test.jpg";
-    // }
 }
-export interface MulterFile {
-                /** Name of the file on the user's computer */
-                originalname: string;
-                /** Encoding type of the file */
-                encoding: string;
-                /** Mime type of the file */
-                mimetype: string;
-                /** Size of the file in bytes */
-                size: number;
-                /** The folder to which the file has been saved (DiskStorage) */
-                destination: string;
-                /** The name of the file within the destination (DiskStorage) */
-                filename: string;
-                /** Location of the uploaded file (DiskStorage) */
-                path: string;
-                /** A Buffer of the entire file (MemoryStorage) */
-                buffer: Buffer;
-            }

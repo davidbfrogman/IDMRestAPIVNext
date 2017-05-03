@@ -10,7 +10,7 @@ log.info(`Connected to RabbitMQ on url:${url}`);
 
 let exchange = rabbit.default();
 
-let queue = exchange.queue({ name: Constants.IDMFileProcessorQ, durable: true, prefetch:1 });
-log.info(`Started Queue Name:${Constants.IDMFileProcessorQ}`);
+let queue = exchange.queue({ name: Constants.IDMImageProcessorQ, durable: true, prefetch:1 });
+log.info(`Started Queue Name:${Constants.IDMImageProcessorQ}`);
 
 export { rabbit, exchange, queue };

@@ -25,7 +25,7 @@ export class FileRouter extends BaseRouter<FileController> {
     public getRouter(): Router {
         this.router = super.getRouter();
 
-        return this.router.use(this.uploader.array('uploads'))
+        return this.router.use(this.uploader.array('files'))
             .post(`${this.resource}/upload`, async (request: Request, response: Response, next: NextFunction) => {
                 await this.controller.uploadFiles(request, response, next); //use the correct method here:
             });
