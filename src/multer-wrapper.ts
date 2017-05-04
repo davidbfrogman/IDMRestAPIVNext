@@ -1,7 +1,7 @@
 import { Router } from 'express';
-import { FileController } from '../controllers/file.controller';
-import { Constants } from "../constants";
-import { Config } from '../config/config';
+import { FileController } from './controllers/file.controller';
+import { Constants } from "./constants";
+import { Config } from './config/config';
 import { Request, Response, RequestHandler, } from 'express';
 import { RequestHandlerParams, NextFunction } from '@types/express-serve-static-core';
 import * as crypto from 'crypto';
@@ -10,7 +10,7 @@ import * as multer from 'multer';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as log from 'winston';
-import * as multerTypes from '../customTypes/multer.index';
+import * as multerTypes from './customTypes/multer.index';
 
 export class MulterWrapper{
     public constructor(){

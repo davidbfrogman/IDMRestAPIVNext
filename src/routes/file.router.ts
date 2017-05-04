@@ -5,7 +5,7 @@ import { Constants } from "../constants";
 import { Config } from '../config/config';
 import { Request, Response, RequestHandler, } from 'express';
 import { RequestHandlerParams, NextFunction } from '@types/express-serve-static-core';
-import { MulterWrapper } from "../file-manager/multer-wrapper";
+import { MulterWrapper } from "../multer-wrapper";
 
 export class FileRouter extends BaseRouter<FileController> {
     public router: Router = Router();

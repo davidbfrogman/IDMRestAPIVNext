@@ -8,13 +8,16 @@ import * as log from 'winston';
 import * as multer from 'multer';
 import * as fs from 'fs';
 import * as path from 'path';
-import { ProcessingState } from "../enumerations";
+import { ProcessingState, ResourceType } from "../enumerations";
 import * as multerTypes from '../customTypes/multer.index';
+import { ResourceComposite, IResourceComposite } from "../models/resource";
 
 // var Promise = require("bluebird");
 
 export class FileController extends BaseController<IFileComposite> {
-    public defaultPopulationArgument = null;
+    public defaultPopulationArgument = {
+       path: 'resource'
+    };
 
     constructor() {
         super();
@@ -22,16 +25,6 @@ export class FileController extends BaseController<IFileComposite> {
     }
 
     public utility(request: Request, response: Response, next: NextFunction): void {
-        let file = new FileComposite();
-        file.name = "DavesTest File";
-        file.location = "/files/";
-        file.fileName = "test.jpg";
-
-        //publish message
-        exchange.publish(file, { key: Constants.IDMImageProcessorQ });
-        response.json({
-            message: "We just published a message on the queue"
-        });
     }
 
 
@@ -43,14 +36,23 @@ export class FileController extends BaseController<IFileComposite> {
         let savePromises = new Array<Promise<IFileComposite>>();
         files.map((uploadedFile) => {
             let databaseFile: IFileComposite = new FileComposite();
-            databaseFile.originalName = uploadedFile.originalname;
-            databaseFile.fileName = uploadedFile.filename;
-            databaseFile.location = uploadedFile.destination;
-            databaseFile.size = uploadedFile.size;
-            databaseFile.mimeType = uploadedFile.mimetype;
-            databaseFile.encoding = uploadedFile.encoding;
+                        
             databaseFile.processingState = ProcessingState.Uploaded;
             databaseFile.isDoneProcessing = false;
+
+            let databaseResource: IResourceComposite = new ResourceComposite();
+
+            databaseResource.originalName = uploadedFile.originalname;
+            databaseResource.fileName = uploadedFile.filename;
+            databaseResource.location = uploadedFile.destination;
+            databaseResource.size = uploadedFile.size;
+            databaseResource.mimeType = uploadedFile.mimetype;
+            databaseResource.encoding = uploadedFile.encoding;
+            databaseResource.isDoneProcessing = false;
+            databaseResource.resourceType = ResourceType.original;
+            databaseResource.processingState = ProcessingState.Uploaded;
+
+            databaseFile.resources.push(databaseResource);
 
             //insert into database
             let savePromise = databaseFile.save()

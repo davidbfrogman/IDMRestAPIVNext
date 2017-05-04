@@ -20,6 +20,15 @@ export enum FieldStyle {
     Boolean = 6,
 }
 
+export enum ResourceType{
+    icon = 1,
+    thumbnail = 2,
+    preview = 3,
+    small = 4,
+    medium = 5,
+    large = 6,
+    original = 7
+}
 
 export class EnumHelper {
     public static getValuesFromEnum<E>(e: E): Array<Number> {
@@ -31,6 +40,8 @@ export class EnumHelper {
         return enumValues;
     }
 }
+
+
 
 //Enum Parsing - Remember basically you really need to cast it as string for it to work. 
 //var colorId = <string>myOtherObject.colorId; // Force string value here
