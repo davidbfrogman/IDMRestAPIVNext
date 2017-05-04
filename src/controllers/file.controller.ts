@@ -16,7 +16,7 @@ import { ResourceComposite, IResourceComposite } from "../models/resource";
 
 export class FileController extends BaseController<IFileComposite> {
     public defaultPopulationArgument = {
-       path: 'resource'
+        path: 'resources'
     };
 
     constructor() {
@@ -36,7 +36,7 @@ export class FileController extends BaseController<IFileComposite> {
         let savePromises = new Array<Promise<IFileComposite>>();
         files.map((uploadedFile) => {
             let databaseFile: IFileComposite = new FileComposite();
-                        
+
             databaseFile.processingState = ProcessingState.Uploaded;
             databaseFile.isDoneProcessing = false;
 
@@ -52,17 +52,18 @@ export class FileController extends BaseController<IFileComposite> {
             databaseResource.resourceType = ResourceType.original;
             databaseResource.processingState = ProcessingState.Uploaded;
 
-            databaseFile.resources.push(databaseResource);
+            databaseResource.save().then((savedResource) => {
+                databaseFile.resources.push(savedResource);
 
-            //insert into database
-            let savePromise = databaseFile.save()
-                .then((savedFile: IFileComposite) => {
-                    savedFileDocuments.push(savedFile);
-                    log.info(`Created New: ${this.mongooseModelInstance.collection.name}, ID: ${savedFile._id}`);
-                    return savedFile;
-                }).catch((error) => { next(error) });
-            savePromises.push(savePromise);
-
+                //insert into database
+                let savePromise = databaseFile.save()
+                    .then((savedFile: IFileComposite) => {
+                        savedFileDocuments.push(savedFile);
+                        log.info(`Created New: ${this.mongooseModelInstance.collection.name}, ID: ${savedFile._id}`);
+                        return savedFile;
+                    }).catch((error) => { next(error) });
+                savePromises.push(savePromise);
+            })
         });
 
         Promise.all(savePromises).then((files: Array<IFileComposite>) => {

@@ -6,7 +6,9 @@ import { IFile } from "../models/file";
 queue.consume((file: IFile, ack) => {
     try {
         log.info('consumed message from queue:', JSON.stringify(file));
-        log.info(`File Properties name: ${file.name}, size: ${file.size}, location: ${file.location}`)
+        if (file.resources) {
+            log.info(`File Properties name: ${file.name}, size: ${file.resources[0].size}, location: ${file.resources[0].location}`);
+        }
         ack();
     }
     catch (error) {
