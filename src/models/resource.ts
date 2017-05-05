@@ -30,7 +30,7 @@ export const ResourceSchema = new Schema({
     originalName:  { type: String },
     resourceType: { type: Number, enum: [EnumHelper.getValuesFromEnum(ResourceType)], default: ResourceType.original },
     fileName:  { type: String },
-    mimetype: { type: String },
+    mimeType: { type: String },
     encoding: { type: String },
     href: { type: String },
     location: { type: String },

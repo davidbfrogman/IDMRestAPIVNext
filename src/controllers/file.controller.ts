@@ -11,6 +11,8 @@ import * as path from 'path';
 import { ProcessingState, ResourceType } from "../enumerations";
 import * as multerTypes from '../customTypes/multer.index';
 import { ResourceComposite, IResourceComposite } from "../models/resource";
+import { mongoose } from "../config/database";
+import * as mongooseSchema from 'mongoose';
 
 // var Promise = require("bluebird");
 
@@ -30,54 +32,72 @@ export class FileController extends BaseController<IFileComposite> {
 
 
     public uploadFiles(request: Request, response: Response, next: NextFunction): void {
-        //this is using custom types that actually match the field name in postman.
+        // this is using custom types that actually match the field name in postman.
         let files = request.files;
-        let savedFileDocuments = new Array<IFileComposite>();
-        let savePromises = new Array<Promise<IFileComposite>>();
-        files.map((uploadedFile) => {
-            let databaseFile: IFileComposite = new FileComposite();
+        let saveFilePromises = new Array<Promise<IFileComposite>>();
+        let saveResourcePromises = new Array<Promise<IResourceComposite>>();
+        files.forEach((uploadedFile) => {
+            let databaseFile = this.buildFileFromRequest(request);
 
-            databaseFile.processingState = ProcessingState.Uploaded;
-            databaseFile.isDoneProcessing = false;
+            let databaseResource: IResourceComposite = this.buildResourceFromRequest(request, uploadedFile);
 
-            let databaseResource: IResourceComposite = new ResourceComposite();
-
-            databaseResource.originalName = uploadedFile.originalname;
-            databaseResource.fileName = uploadedFile.filename;
-            databaseResource.location = uploadedFile.destination;
-            databaseResource.size = uploadedFile.size;
-            databaseResource.mimeType = uploadedFile.mimetype;
-            databaseResource.encoding = uploadedFile.encoding;
-            databaseResource.isDoneProcessing = false;
-            databaseResource.resourceType = ResourceType.original;
-            databaseResource.processingState = ProcessingState.Uploaded;
-
-            databaseResource.save().then((savedResource) => {
+            saveResourcePromises.push(databaseResource.save().then((savedResource) => {
                 databaseFile.resources.push(savedResource);
 
                 //insert into database
-                let savePromise = databaseFile.save()
+                saveFilePromises.push(databaseFile.save()
                     .then((savedFile: IFileComposite) => {
-                        savedFileDocuments.push(savedFile);
                         log.info(`Created New: ${this.mongooseModelInstance.collection.name}, ID: ${savedFile._id}`);
                         return savedFile;
-                    }).catch((error) => { next(error) });
-                savePromises.push(savePromise);
-            })
+                    }).catch((error) => { next(error) }));
+
+                return savedResource;
+            }).catch((error) => { next(error) }));
         });
 
-        Promise.all(savePromises).then((files: Array<IFileComposite>) => {
-            //push message onto queue
-            try {
-                files.map((file) => {
-                    exchange.publish(file, { key: Constants.IDMImageProcessorQ });
-                });
+        Promise.all(saveResourcePromises).then((savedResources) => {
+            Promise.all(saveFilePromises).then((files: Array<IFileComposite>) => {
+                // push message onto queue
+                try {
+                    let fileIds = new Array<any>();
+                    files.forEach((file) => {
+                        exchange.publish(file, { key: Constants.IDMImageProcessorQ });
+                        fileIds.push(file._id);
+                    });
 
-                response.status(201).json({ files });
-            }
-            catch (error) {
-                next(error);
-            }
-        })
+                    FileComposite.find({ _id: { $in: fileIds } }).populate('resources').exec().then((files) => {
+                        response.status(201).json({ files });
+                    }).catch((error) => { next(error) });
+                }
+                catch (error) {
+                    next(error);
+                }
+            });
+        });
+    }
+
+    public buildFileFromRequest(request: Request): IFileComposite {
+        let databaseFile: IFileComposite = new FileComposite();
+
+        databaseFile.processingState = ProcessingState.Uploaded;
+        databaseFile.isDoneProcessing = false;
+        
+        return databaseFile;
+    }
+
+    public buildResourceFromRequest(request: Request, uploadedFile: Express.Multer.File): IResourceComposite {
+        let databaseResource: IResourceComposite = new ResourceComposite();
+
+        databaseResource.originalName = uploadedFile.originalname;
+        databaseResource.fileName = uploadedFile.filename;
+        databaseResource.location = uploadedFile.destination;
+        databaseResource.size = uploadedFile.size;
+        databaseResource.mimeType = uploadedFile.mimetype;
+        databaseResource.encoding = uploadedFile.encoding;
+        databaseResource.isDoneProcessing = false;
+        databaseResource.resourceType = ResourceType.original;
+        databaseResource.processingState = ProcessingState.Uploaded;
+
+        return databaseResource;
     }
 }

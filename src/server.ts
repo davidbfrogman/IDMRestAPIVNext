@@ -5,6 +5,7 @@ import * as morgan from 'morgan';
 import * as fs from 'fs';
 import * as helmet from 'helmet';
 
+import { ObjectId } from "@types/bson";
 import { join } from 'path';
 import { json, urlencoded } from 'body-parser';
 import { mongoose } from './config/database';

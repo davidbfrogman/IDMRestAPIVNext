@@ -10,8 +10,8 @@
   "scripts": {
     "build": "gulp build",
     "watch": "gulp watch",
-    "api": "nodemon dist/server.js",
-    "fp": "nodemon dist/file-processor/file-processor.js",
+    "api": "nodemon dist/server.js --delay 4",
+    "fp": "nodemon dist/file-processor/file-processor.js --delay 4",
     "test": "mocha --opts mocha.config",
     "test:auto": "mocha --opts mocha.config --watch"
   },
@@ -44,6 +44,7 @@
   "devDependencies": {
     "@types/bluebird": "^3.5.2",
     "@types/body-parser": "0.0.33",
+    "@types/bson": "^1.0.3",
     "@types/chai": "^3.5.0",
     "@types/chai-http": "0.0.30",
     "@types/compression": "0.0.33",
